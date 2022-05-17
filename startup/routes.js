@@ -25,6 +25,8 @@ const assesmentRoute = require("../routes/assesmentRoute");
 const examRoute = require("../routes/examRoute");
 const studentAttendanceRoute = require("../routes/studentAttendanceRoute");
 const newsFeedRoute = require("../routes/newsFeedRoute");
+const studentRoute = require("../routes/studentRoute");
+const eventRoute = require("../routes/eventRoute");
 
 module.exports = (app) => {
   app.use(express.json());
@@ -54,6 +56,8 @@ module.exports = (app) => {
   app.use("/api/exams", examRoute);
   app.use("/api/studentAttendance", studentAttendanceRoute);
   app.use("/api/newsfeed", newsFeedRoute);
+  app.use("/api/studentAdmission", studentRoute);
+  app.use("/api/events", eventRoute);
 
   app.use(error);
 };

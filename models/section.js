@@ -8,7 +8,9 @@ const Section = function (section) {
 
 //
 Section.findAll = (result) => {
-  let query = `SELECT * FROM sections ORDER BY sectionId ASC`;
+  let query = `SELECT s.sectionId , s.name , s.maximumStudents  , c.name AS class FROM sections s  JOIN classes c ON 
+  s.classId AND c.classId 
+  `;
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);
