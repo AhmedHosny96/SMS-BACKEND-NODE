@@ -16,7 +16,11 @@ const Assignment = function (assignment) {
 
 // create new subject
 Assignment.findAll = (result) => {
-  const query = "SELECT * FROM assignments ORDER BY assignmentId ASC ";
+  const query = `SELECT DISTINCT  a.assignmentId ,  a.title , a.type , a.date   , a.dueDate , s.name  AS subject
+  
+  FROM assignments a  INNER JOIN subjects s on a.subjectId = s.subjectId
+  
+  ORDER BY assignmentId ASC`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);

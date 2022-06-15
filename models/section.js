@@ -21,7 +21,7 @@ Section.findAll = (result) => {
 
 // by id
 Section.findById = (id, result) => {
-  let query = `SELECT * FROM sections WHERE sectionId = '${id}'`;
+  let query = `SELECT id , classId , maximumStudents FROM sections WHERE sectionId = '${id}'`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);

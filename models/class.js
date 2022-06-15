@@ -18,7 +18,7 @@ Class.findAll = (result) => {
 
 // by id
 Class.findById = (id, result) => {
-  let query = `SELECT * FROM classes WHERE classId = '${id}'`;
+  let query = `SELECT id , name , description FROM classes WHERE classId = '${id}'`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);

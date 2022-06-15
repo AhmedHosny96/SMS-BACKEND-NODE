@@ -13,7 +13,9 @@ const Note = function (timetable) {
 
 // create new subject
 Note.findAll = (result) => {
-  const query = "SELECT * FROM notes ORDER BY noteId ASC ";
+  const query = `SELECT n.noteId , n.title , n.description , n.attachment , c.name AS class , s.name AS subject 
+  FROM notes n INNER JOIN subjects s ON n.subjectId = s.subjectId INNER JOIN classes c ON n.classId = c.classId
+  ORDER BY noteId ASC`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);

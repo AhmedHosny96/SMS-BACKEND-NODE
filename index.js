@@ -1,5 +1,8 @@
 const app = require("express")();
 const winston = require("winston");
+const cors = require("cors");
+
+app.use(cors());
 require("dotenv").config();
 require("./config/db");
 // require("./routes/subjects.route")(app);
