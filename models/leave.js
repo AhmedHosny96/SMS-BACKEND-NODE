@@ -4,7 +4,7 @@ const mysql = require("../config/db");
 
 const Leave = function (leave) {
   this.employeeId = leave.employeeId;
-  this.leaveId = leave.leaveId;
+  this.leaveTypeId = leave.leaveTypeId;
   this.fromDate = leave.fromDate;
   this.toDate = leave.toDate;
   this.remark = leave.remark;
@@ -14,7 +14,8 @@ const Leave = function (leave) {
 
 // create new subject
 Leave.findAll = (result) => {
-  const query = "SELECT * FROM leaves ORDER BY leaveId ASC ";
+  const query =
+    "SELECT l.leaveId , l.fromDate , l.toDate , l.status , l.approvedBy , t.type AS leaveType , concat (e.firstName , ' ' , e.middleName , e.lastName) AS employeeName   FROM leaves l INNER JOIN leaveTypes t ON l.leaveTypeId = t.leaveTypeId  INNER JOIN employees e ON l.employeeId = e.employeeId   ORDER BY leaveId ASC ";
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);
@@ -51,7 +52,7 @@ Leave.create = (leave, result) => {
 //update
 
 Leave.findByIdAndUpdate = (id, event, result) => {
-  let query = `UPDATE leaves SET employeeId = '${event.employeeId}' , leaveId = '${event.leaveId}' 
+  let query = `UPDATE leaves SET employeeId = '${event.employeeId}' , leaveTypeId = '${event.leaveTypeId}' 
   , fromDate = '${event.fromDate}' , toDate = '${event.toDate}'  , remark = '${event.remark}' , status = '${event.status}' , approvedBy = '${event.approvedBy}'  WHERE leaveId = '${id}'`;
 
   mysql.query(query, (err, res) => {

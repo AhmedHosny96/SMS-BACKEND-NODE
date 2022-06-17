@@ -6,7 +6,7 @@ const JobTitle = function (title) {
 
 // find all
 JobTitle.findAll = (result) => {
-  let query = `SELECT * FROM jobTitles ORDER BY titleId`;
+  let query = `SELECT j.titleId , j.name FROM jobTitles j ORDER BY titleId`;
 
   mysql.query(query, (err, data) => {
     if (err) return result(null, err);
@@ -18,7 +18,7 @@ JobTitle.findAll = (result) => {
 // findbyId
 
 JobTitle.findById = (id, result) => {
-  let query = `SELECT * FROM jobTitles WHERE titleId = '${id}'`;
+  let query = `SELECT j.titleId , j.name FROM jobTitles WHERE titleId = '${id}'`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(err, null);

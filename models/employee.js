@@ -2,30 +2,32 @@ const mysql = require("../config/db");
 
 // constructor
 
-const Employee = function (teacher) {
-  this.departmentId = teacher.departmentId;
-  this.titleId = teacher.titleId;
-  this.joinedDate = teacher.joinedDate;
-  this.qualification = teacher.qualification;
-  this.totalExperience = teacher.totalExperience;
-  this.firstName = teacher.firstName;
-  this.middleName = teacher.middleName;
-  this.lastName = teacher.lastName;
-  this.dob = teacher.dob;
-  this.gender = teacher.gender;
-  this.phoneNumber = teacher.phoneNumber;
-  this.email = teacher.phoneNumber;
-  this.country = teacher.country;
-  this.city = teacher.city;
-  this.subCity = teacher.subCity;
-  this.kebele = teacher.kebele;
-  this.image = teacher.image;
-  this.bankAccount = teacher.bankAccount;
+const Employee = function (employee) {
+  this.departmentId = employee.departmentId;
+  this.titleId = employee.titleId;
+  this.joinedDate = employee.joinedDate;
+  this.qualification = employee.qualification;
+  this.totalExperience = employee.totalExperience;
+  this.firstName = employee.firstName;
+  this.middleName = employee.middleName;
+  this.lastName = employee.lastName;
+  this.dob = employee.dob;
+  this.gender = employee.gender;
+  this.phoneNumber = employee.phoneNumber;
+  this.email = employee.email;
+  this.country = employee.country;
+  this.city = employee.city;
+  this.subCity = employee.subCity;
+  // this.kebele = employee.kebele;
+  this.image = employee.image;
+  // this.bankAccount = employee.bankAccount;
 };
 
 // create new subject
 Employee.findAll = (result) => {
-  const query = "SELECT * FROM employees ORDER BY employeeId ASC ";
+  const query = `SELECT e.employeeId , concat (e.firstName , ' ' , e.middleName , ' ', e.lastName)  AS fullName ,   e.email , e.phoneNumber  , j.name AS jobTitle , d.name AS department
+     FROM employees e INNER JOIN departments d ON e.departmentId = d.departmentId INNER JOIN jobTitles j ON e.titleId = j.titleId
+     ORDER BY employeeId ASC`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);

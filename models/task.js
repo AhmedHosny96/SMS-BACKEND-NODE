@@ -13,7 +13,8 @@ const Task = function (tasks) {
 
 // create new subject
 Task.findAll = (result) => {
-  const query = "SELECT * FROM tasks ORDER BY taskId ASC ";
+  const query =
+    "SELECT t.taskId , t.task , t.date , t.description , t.priority , t.status , u.username  FROM tasks t INNER JOIN users u ON t.userId = u.userId ORDER BY taskId ASC ";
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);

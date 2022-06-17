@@ -28,8 +28,15 @@ router.get("/:id", async (req, res) => {
 });
 // create status
 router.post("/", async (req, res) => {
-  const { employeeId, leaveId, fromDate, toDate, remark, status, approvedBy } =
-    req.body;
+  const {
+    employeeId,
+    leaveTypeId,
+    fromDate,
+    toDate,
+    remark,
+    status,
+    approvedBy,
+  } = req.body;
   //   // validation
   if (!req.body)
     return res.status(400).send({ message: "Content can't be empty" });
@@ -37,7 +44,7 @@ router.post("/", async (req, res) => {
   //
   const event = new Leave({
     employeeId,
-    leaveId,
+    leaveTypeId,
     fromDate,
     toDate,
     remark,
@@ -53,8 +60,15 @@ router.post("/", async (req, res) => {
 //update
 
 router.put("/:id", async (req, res) => {
-  const { employeeId, leaveId, fromDate, toDate, remark, status, approvedBy } =
-    req.body;
+  const {
+    employeeId,
+    leaveTypeId,
+    fromDate,
+    toDate,
+    remark,
+    status,
+    approvedBy,
+  } = req.body;
 
   // validation
 
@@ -64,7 +78,7 @@ router.put("/:id", async (req, res) => {
     id,
     new Leave({
       employeeId,
-      leaveId,
+      leaveTypeId,
       fromDate,
       toDate,
       remark,

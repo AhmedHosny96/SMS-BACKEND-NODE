@@ -63,7 +63,7 @@ module.exports = (app) => {
   app.use("/api/newsfeed", newsFeedRoute);
   app.use("/api/studentAdmission", studentRoute);
   app.use("/api/events", eventRoute);
-  app.use("/api/deparments", departmentRoute);
+  app.use("/api/departments", departmentRoute);
   app.use("/api/jobTitles", jobTitleRoute);
   app.use("/api/leaveTypes", leaveTypeRoute);
   app.use("/api/leaves", leaveRoute);

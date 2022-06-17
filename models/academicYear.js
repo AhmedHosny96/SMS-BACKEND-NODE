@@ -12,7 +12,8 @@ const AcademicYear = function (session) {
 
 // create new subject
 AcademicYear.findAll = (result) => {
-  const query = "SELECT * FROM academicYear ORDER BY academicId ASC ";
+  const query =
+    "SELECT a.name , a.startDate , a.endDate , a.ethiopianYear FROM academicYear a ORDER BY academicId ASC ";
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);

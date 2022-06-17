@@ -1,5 +1,25 @@
 const router = require("express").Router();
+const multer = require("multer");
+const path = require("path");
 const Employee = require("../models/employee");
+
+const uploadStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join("./uploads/"));
+  },
+  filename: (req, file, cb) => {
+    cb(null, req.body.title + file.originalname);
+  },
+});
+
+// multer storage
+
+const uploads = multer({
+  storage: uploadStorage,
+  limits: {
+    fieldSize: 1024 * 1024 * 10,
+  },
+});
 
 // get all
 router.get("/", async (req, res) => {
@@ -27,7 +47,7 @@ router.get("/:id", async (req, res) => {
   });
 });
 // create status
-router.post("/", async (req, res) => {
+router.post("/", uploads.single("image"), async (req, res) => {
   const {
     departmentId,
     titleId,
@@ -44,8 +64,8 @@ router.post("/", async (req, res) => {
     country,
     city,
     subCity,
-    kebele,
-    bankAccount,
+    // kebele,
+    // bankAccount,
   } = req.body;
   //   // validation
   if (!req.body)
@@ -68,9 +88,9 @@ router.post("/", async (req, res) => {
     country,
     city,
     subCity,
-    kebele,
+    // kebele,
     image: req.file.filename,
-    bankAccount,
+    // bankAccount,
   });
   Employee.create(employee, (err, data) => {
     if (err) return res.status(500).send(err.message);

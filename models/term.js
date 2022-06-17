@@ -12,7 +12,8 @@ const Term = function (term) {
 
 // create new subject
 Term.findAll = (result) => {
-  const query = "SELECT * FROM terms ORDER BY termId ASC ";
+  const query =
+    "SELECT t.termId , t.name , t.startDate ,  t.endDate , t.ethiopianDate , a.name AS session FROM terms t INNER JOIN academicyear a ON t.academicId = a.academicId ORDER BY termId ASC ";
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);

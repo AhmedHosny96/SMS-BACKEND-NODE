@@ -6,9 +6,11 @@ router.get("/", async (req, res) => {
   User.findAll((err, data) => {
     if (err) return res.status(500).send(err.message);
 
-    const { password, ...others } = data;
+    // const { password, ...others } = data;
 
-    res.send(others);
+    console.log(data);
+
+    res.send(data);
   });
 });
 
