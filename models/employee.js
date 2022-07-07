@@ -18,27 +18,27 @@ const Employee = function (employee) {
   this.country = employee.country;
   this.city = employee.city;
   this.subCity = employee.subCity;
-  // this.kebele = employee.kebele;
+  this.kebele = employee.kebele;
   this.image = employee.image;
-  // this.bankAccount = employee.bankAccount;
+  this.bankAccount = employee.bankAccount;
+  this.salary = employee.salary;
+  this.status = employee.status || "Active";
 };
 
 // create new subject
 Employee.findAll = (result) => {
-  const query = `SELECT e.employeeId , concat (e.firstName , ' ' , e.middleName , ' ', e.lastName)  AS fullName ,   e.email , e.phoneNumber  , j.name AS jobTitle , d.name AS department
-     FROM employees e INNER JOIN departments d ON e.departmentId = d.departmentId INNER JOIN jobTitles j ON e.titleId = j.titleId
-     ORDER BY employeeId ASC`;
+  const query = `CALL getEmployees()`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);
 
-    result(null, res);
+    result(null, res[0]);
   });
 };
 // findbyId
 
 Employee.findById = (id, result) => {
-  let query = `SELECT * FROM employees WHERE employeeId = '${id}'`;
+  let query = `CALL getEmployeeById(${id})`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(err, null);
@@ -52,40 +52,125 @@ Employee.findById = (id, result) => {
 // create roles
 
 Employee.create = (employee, result) => {
-  mysql.query("INSERT INTO employees SET ?", employee, (err, res) => {
-    if (err) {
-      return result(err, null);
-    }
+  const {
+    departmentId,
+    titleId,
+    joinedDate,
+    qualification,
+    totalExperience,
+    firstName,
+    middleName,
+    lastName,
+    dob,
+    gender,
+    phoneNumber,
+    email,
+    country,
+    city,
+    subCity,
+    kebele,
+    image,
+    bankAccount,
+    salary,
+    status,
+  } = employee;
 
-    result(null, { id: res.insertId, ...employee });
-  });
+  mysql.query(
+    `CALL createEmployee(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+    [
+      departmentId,
+      titleId,
+      joinedDate,
+      qualification,
+      totalExperience,
+      firstName,
+      middleName,
+      lastName,
+      dob,
+      gender,
+      phoneNumber,
+      email,
+      country,
+      city,
+      subCity,
+      kebele,
+      image,
+      bankAccount,
+      status,
+      salary,
+    ],
+    (err, res) => {
+      if (err) {
+        return result(err, null);
+      }
+
+      result(null, { id: res.insertId, ...employee });
+    }
+  );
 };
 
 //update
 
 Employee.findByIdAndUpdate = (id, employee, result) => {
-  let query = `UPDATE employees SET departmentId = '${employee.departmentId}' , titleId = '${employee.titleId}' , 
-  joinedDate = '${employee.joinedDate}' , qualification = '${employee.qualification}' , 
-  totalExperience = '${employee.totalExperience}' , firstName = '${employee.firstName}' ,
-   middleName = '${employee.middleName}' , lastName = '${employee.lastName}' , 
-   dob = '${employee.dob}' , gender = '${employee.gender}' , phoneNumber = '${employee.phoneNumber}' , 
-  email = '${employee.email}' , country = '${employee.country}' , 
-  city = '${employee.city}' , subCity = '${employee.subCity}' ,  kebele = '${employee.kebele}' , image = '${employee.image}' , 
-  bankAccount = '${employee.bankAccount}'  WHERE employeeId = '${id}'`;
+  const {
+    departmentId,
+    titleId,
+    joinedDate,
+    qualification,
+    totalExperience,
+    firstName,
+    middleName,
+    lastName,
+    dob,
+    gender,
+    phoneNumber,
+    email,
+    country,
+    city,
+    subCity,
+    kebele,
+    image,
+    bankAccount,
+    salary,
+  } = employee;
 
-  mysql.query(query, (err, res) => {
-    if (err) return result(null, err);
+  mysql.query(
+    `CALL updateEmployee(${id} ,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?.?,? )`,
+    [
+      departmentId,
+      titleId,
+      joinedDate,
+      qualification,
+      totalExperience,
+      firstName,
+      middleName,
+      lastName,
+      dob,
+      gender,
+      phoneNumber,
+      email,
+      country,
+      city,
+      subCity,
+      kebele,
+      image,
+      bankAccount,
+      salary,
+    ],
+    (err, res) => {
+      if (err) return result(null, err);
 
-    if (res.length == 0) return result({ kind: "not_found" }, null);
+      if (res.length == 0) return result({ kind: "not_found" }, null);
 
-    result(null, { ...employee });
-  });
+      result(null, { ...employee });
+    }
+  );
 };
 
 // delete
 
 Employee.findByIdAndDelete = (id, result) => {
-  let query = `DELETE FROM employees WHERE employeeId = '${id}'`;
+  let query = `CALL deleteEmployee(${id})`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);

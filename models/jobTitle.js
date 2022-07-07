@@ -6,19 +6,19 @@ const JobTitle = function (title) {
 
 // find all
 JobTitle.findAll = (result) => {
-  let query = `SELECT j.titleId , j.name FROM jobTitles j ORDER BY titleId`;
+  let query = `CALL getJobTitles()`;
 
   mysql.query(query, (err, data) => {
     if (err) return result(null, err);
 
-    result(null, data);
+    result(null, data[0]);
   });
 };
 
 // findbyId
 
 JobTitle.findById = (id, result) => {
-  let query = `SELECT j.titleId , j.name FROM jobTitles WHERE titleId = '${id}'`;
+  let query = `CALL getJobTitleById(${id})`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(err, null);
@@ -30,7 +30,7 @@ JobTitle.findById = (id, result) => {
 };
 // create status
 JobTitle.create = (title, result) => {
-  mysql.query("INSERT INTO jobTitles SET?", title, (err, res) => {
+  mysql.query(`CALL createJobtitle(?)`, [title.name], (err, res) => {
     if (err) return result(err, null);
 
     result(null, { id: res.insertId, ...title });
@@ -40,12 +40,8 @@ JobTitle.create = (title, result) => {
 // update
 
 JobTitle.findByIdAndUpdate = (id, title, result) => {
-  let query = `UPDATE jobTitles SET name = '${title.name}' WHERE titleId = '${id}'`;
-
-  mysql.query(query, (err, res) => {
+  mysql.query(`CALL updateJobTitle(${id} , ?)`, [title.name], (err, res) => {
     if (err) return result(null, err);
-
-    // if (res.length == 0) return result({ kind: "not_found" }, null);
 
     result(null, { ...title });
   });
@@ -54,7 +50,7 @@ JobTitle.findByIdAndUpdate = (id, title, result) => {
 // delete
 
 JobTitle.findByidAndDelete = (id, result) => {
-  let query = `DELETE FROM jobTitles WHERE titleId = '${id}'`;
+  let query = ` CALL deleteJobTitle(${id})`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);

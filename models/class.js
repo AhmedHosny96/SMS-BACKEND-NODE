@@ -1,34 +1,37 @@
 const mysql = require("../config/db");
 
 const Class = function (classes) {
+  this.classId = classes.classId;
   this.name = classes.name;
   this.description = classes.description;
 };
 
 //
 Class.findAll = (result) => {
-  let query = `SELECT * FROM classes ORDER BY classId ASC`;
+  let query = `CALL getClasses()`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);
 
-    result(null, res);
+    result(null, res[0]);
   });
 };
 
 // by id
 Class.findById = (id, result) => {
-  let query = `SELECT id , name , description FROM classes WHERE classId = '${id}'`;
+  let query = ` CALL getClassById(${id})`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);
 
-    result(null, res);
+    result(null, res[0]);
   });
 };
 
 Class.create = (data, result) => {
-  mysql.query(`INSERT INTO classes SET ?`, data, (err, res) => {
+  const { name, description } = data;
+
+  mysql.query(`CALL createClass(? , ?)`, [name, description], (err, res) => {
     if (err) return result(null, err);
 
     result(null, { id: res.insertId, ...data });
@@ -38,23 +41,27 @@ Class.create = (data, result) => {
 //update
 
 Class.findByIdAndUpdate = (id, data, result) => {
-  let query = `UPDATE classes SET name = '${data.name}'  , description = '${data.description}' WHERE classId = '${id}'`;
+  const { name, description } = data;
 
-  mysql.query(query, (err, res) => {
-    if (err) return result(null, err);
+  // let query = ` , ${[id, name, description]}`;
 
-    // if (res.length == 0) return result({ kind: "not_found" }, null);
+  mysql.query(
+    `CALL updateClass(${id} , ? , ? )`,
+    [name, description],
+    (err, res) => {
+      if (err) return result(null, err);
 
-    result(null, { ...data });
-  });
+      // if (res.length == 0) return result({ kind: "not_found" }, null);
+
+      result(null, { ...data });
+    }
+  );
 };
 
 // delete
 
 Class.findByIdAndDelete = (id, result) => {
-  let query = `DELETE FROM classes WHERE classId = '${id}'`;
-
-  mysql.query(query, (err, res) => {
+  mysql.query(`CALL deleteClass(${id})`, (err, res) => {
     if (err) return result(null, err);
 
     if (res.affectedRows == 0) return result({ kind: "not_found" }, null);

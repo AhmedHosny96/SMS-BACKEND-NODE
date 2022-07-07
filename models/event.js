@@ -14,59 +14,68 @@ const Event = function (event) {
 
 // create new subject
 Event.findAll = (result) => {
-  const query = "SELECT * FROM events ORDER BY eventId ASC ";
+  const query = "CALL getEvents()";
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);
 
-    result(null, res);
+    result(null, res[0]);
   });
 };
 // findbyId
 
 Event.findById = (id, result) => {
-  let query = `SELECT * FROM events WHERE eventId = '${id}'`;
+  let query = `CALL getEventById(${id})`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(err, null);
 
     if (res.affectedRows == 0) return result({ kind: "not_found" }, null);
 
-    result(null, res);
+    result(null, res[0]);
   });
 };
 
 // create roles
 
 Event.create = (event, result) => {
-  mysql.query("INSERT INTO events SET ?", event, (err, res) => {
-    if (err) {
-      return result(err, null);
-    }
+  const { eventType, eventFor, fromDate, toDate, description } = event;
 
-    result(null, { id: res.insertId, ...event });
-  });
+  mysql.query(
+    "CALL createEvent(?,?,?,?,?)",
+    [eventType, eventFor, fromDate, toDate, description],
+    (err, res) => {
+      if (err) {
+        return result(err, null);
+      }
+
+      result(null, { id: res.insertId, ...event });
+    }
+  );
 };
 
 //update
 
 Event.findByIdAndUpdate = (id, event, result) => {
-  let query = `UPDATE events SET eventType = '${event.eventType}' , eventFor = '${event.eventFor}' 
-  , fromDate = '${event.fromDate}' , toDate = '${event.toDate}'  , description = '${event.description}' WHERE eventId = '${id}'`;
+  const { eventType, eventFor, fromDate, toDate, description } = event;
 
-  mysql.query(query, (err, res) => {
-    if (err) return result(null, err);
+  mysql.query(
+    `CALL updateEvent(${id},?,?,?,?,?)`,
+    [eventType, eventFor, fromDate, toDate, description],
+    (err, res) => {
+      if (err) return result(null, err);
 
-    // if (res.length == 0) return result({ kind: "not_found" }, null);
+      // if (res.length == 0) return result({ kind: "not_found" }, null);
 
-    result(null, { ...event });
-  });
+      result(null, { ...event });
+    }
+  );
 };
 
 // delete
 
 Event.findByIdAndDelete = (id, result) => {
-  let query = `DELETE FROM events WHERE eventId = '${id}'`;
+  let query = `CALL deleteEvent(${id})`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);

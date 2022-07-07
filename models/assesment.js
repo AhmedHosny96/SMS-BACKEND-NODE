@@ -2,12 +2,12 @@ const mysql = require("../config/db");
 
 // constructor
 
-const Assesment = function (assesmen) {
-  this.name = assesmen.name;
-  this.classId = assesmen.classId;
-  this.sectionId = assesmen.sectionId;
-  this.subjectId = assesmen.subjectId;
-  this.maxMarks = assesmen.maxMarks;
+const Assesment = function (assesment) {
+  this.name = assesment.name;
+  this.classId = assesment.classId;
+  this.sectionId = assesment.sectionId;
+  this.subjectId = assesment.subjectId;
+  this.maxMarks = assesment.maxMarks;
 };
 
 // create new subject

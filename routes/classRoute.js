@@ -22,13 +22,14 @@ router.get("/:id", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const { name, description } = req.body;
+  const { classId, name, description } = req.body;
 
   if (!req.body) return res.status(400).send("body cannot be empty");
 
   const values = new Class({
-    name: name,
-    description: description,
+    classId,
+    name,
+    description,
   });
 
   Class.create(values, (err, data) => {
@@ -54,7 +55,7 @@ router.put("/:id", async (req, res) => {
 });
 
 // delete
-router.delete("/:id", auth, async (req, res) => {
+router.delete("/:id", async (req, res) => {
   const { id } = req.params;
   Class.findByIdAndDelete(id, (err, data) => {
     if (err) {

@@ -8,34 +8,31 @@ const User = function (user) {
 };
 
 User.findAll = (result) => {
-  const query =
-    "SELECT u.userId , u.username , u.email , r.name AS role  FROM users u INNER JOIN roles r  ON u.roleId = r.roleId ";
+  const query = `CALL getUsers()`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err.message);
 
-    result(null, res);
+    result(null, res[0]);
   });
 };
 // find one
 
 User.findOne = (email, result) => {
-  mysql.query(
-    "SELECT u.userId , u.username , u.email FROM users u WHERE email=?",
-    email,
-    (err, res) => {
-      if (err) {
-        return result(err.message, null);
-      }
+  const query = `CALL getUserByEmail(${email})`;
 
-      result(null, res);
+  mysql.query(query, (err, res) => {
+    if (err) {
+      return result(err.message, null);
     }
-  );
+
+    result(null, res);
+  });
 };
 
 // find by id
 User.findById = (id, result) => {
-  let query = `SELECT u.userId , u.username , u.email FROM users WHERE userId = '${id}'`;
+  let query = `CALL getUserById(${id})`;
   mysql.query(query, id, (err, res) => {
     if (err) return result(err.message, null);
 

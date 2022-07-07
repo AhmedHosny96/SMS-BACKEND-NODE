@@ -16,22 +16,18 @@ const Assignment = function (assignment) {
 
 // create new subject
 Assignment.findAll = (result) => {
-  const query = `SELECT DISTINCT  a.assignmentId ,  a.title , a.type , a.date   , a.dueDate , s.name  AS subject
-  
-  FROM assignments a  INNER JOIN subjects s on a.subjectId = s.subjectId
-  
-  ORDER BY assignmentId ASC`;
+  const query = `CALL getAssigments()`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);
 
-    result(null, res);
+    result(null, res[0]);
   });
 };
 // findbyId
 
 Assignment.findById = (id, result) => {
-  let query = `SELECT * FROM assignments WHERE assignmentId = '${id}'`;
+  let query = `CALL getAssignmentById(${id})`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(err, null);
@@ -45,34 +41,82 @@ Assignment.findById = (id, result) => {
 // create roles
 
 Assignment.create = (assignment, result) => {
-  mysql.query("INSERT INTO assignments SET ?", assignment, (err, res) => {
-    if (err) {
-      return result(err, null);
-    }
+  const {
+    title,
+    type,
+    date,
+    description,
+    dueDate,
+    attachment,
+    subjectId,
+    sectionId,
+    classId,
+  } = assignment;
+  mysql.query(
+    `CALL createAssignment(?,?,?,?,?,?,?,?,?)`,
+    [
+      title,
+      type,
+      date,
+      description,
+      dueDate,
+      attachment,
+      subjectId,
+      sectionId,
+      classId,
+    ],
+    (err, res) => {
+      if (err) {
+        return result(err, null);
+      }
 
-    result(null, { id: res.insertId, ...assignment });
-  });
+      result(null, { id: res.insertId, ...assignment });
+    }
+  );
 };
 
 //update
 
 Assignment.findByIdAndUpdate = (id, assignment, result) => {
-  let query = `UPDATE assignments SET title = '${assignment.title}' , type = '${assignment.type}', description = '${assignment.description}' , date = '${assignment.date}', dueDate = '${assignment.dueDate}' ,  attachment = '${assignment.attachment}', classId = '${assignment.classId}' 
-  ,sectionId = '${assignment.sectionId}' ,subjectId = '${assignment.subjectId}' WHERE assignmentId = '${id}'`;
+  const {
+    title,
+    type,
+    date,
+    description,
+    dueDate,
+    attachment,
+    subjectId,
+    sectionId,
+    classId,
+  } = assignment;
 
-  mysql.query(query, (err, res) => {
-    if (err) return result(null, err);
+  mysql.query(
+    `CALL updateAssignment(${id},?,?,?,?,?,?,?,?,?)`,
+    [
+      title,
+      type,
+      date,
+      description,
+      dueDate,
+      attachment,
+      subjectId,
+      sectionId,
+      classId,
+    ],
+    (err, res) => {
+      if (err) return result(null, err);
 
-    if (res.length == 0) return result({ kind: "not_found" }, null);
+      if (res.length == 0) return result({ kind: "not_found" }, null);
 
-    result(null, { ...assignment });
-  });
+      result(null, { ...assignment });
+    }
+  );
 };
 
 // delete
 
 Assignment.findByIdAndDelete = (id, result) => {
-  let query = `DELETE FROM assignments WHERE assignmentId = '${id}'`;
+  let query = `CALL deleteAssignment(${id})`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);

@@ -25,13 +25,17 @@ const uploads = multer({
 
 // get all
 router.get("/", async (req, res) => {
-  if (!req.body) return res.status(400).send("Content cannot be empty");
+  try {
+    if (!req.body) return res.status(400).send("Content cannot be empty");
 
-  NewsFeed.findAll((err, data) => {
-    if (err) return res.status(500).send(err.messsage);
+    NewsFeed.findAll((err, data) => {
+      if (err) return res.status(500).send(err.messsage);
 
-    res.send(data);
-  });
+      res.send(data);
+    });
+  } catch (error) {
+    res.send(error);
+  }
 });
 
 // get by id
@@ -56,14 +60,14 @@ router.post("/", uploads.single("attachment"), async (req, res) => {
   if (!req.body)
     return res.status(400).send({ message: "Content can't be empty" });
 
-  const { title, description, roleId } = req.body;
+  const { title, description, date } = req.body;
 
   //
   const feed = new NewsFeed({
     title,
     description,
     attachment: req.file.filename,
-    roleId,
+    date,
   });
 
   NewsFeed.create(feed, (err, data) => {
@@ -74,17 +78,24 @@ router.post("/", uploads.single("attachment"), async (req, res) => {
 });
 
 //update
-router.put("/:id", async (req, res) => {
+router.put("/:id", uploads.single("attachment"), async (req, res) => {
   const { id } = req.params;
-  NewsFeed.findByIdAndUpdate(id, new NewsFeed(req.body), (err, data) => {
-    if (err) {
-      err.kind === "not_found"
-        ? res.status(400).send({ message: "news feed not found with id " + id })
-        : res.status(500).json(err.message);
-    }
+  const { title, description, date } = req.body;
+  NewsFeed.findByIdAndUpdate(
+    id,
+    new NewsFeed({ title, description, attachment: req.file.filename, date }),
+    (err, data) => {
+      if (err) {
+        err.kind === "not_found"
+          ? res
+              .status(400)
+              .send({ message: "news feed not found with id " + id })
+          : res.status(500).json(err.message);
+      }
 
-    res.send(data);
-  });
+      res.send(data);
+    }
+  );
 });
 
 // delete

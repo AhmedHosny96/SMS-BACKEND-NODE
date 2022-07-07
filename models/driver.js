@@ -8,23 +8,24 @@ const Driver = function (driver) {
   this.phoneNumber = driver.phoneNumber;
   this.licenceNumber = driver.licenceNumber;
   this.dob = driver.dob;
-  this.vehicleId = driver.vehicleId || 1;
+  this.status = driver.status;
+  this.vehicleId = driver.vehicleId;
 };
 
 // create new subject
 Driver.findAll = (result) => {
-  const query = "SELECT * FROM drivers ORDER BY driverId ASC ";
+  const query = `CALL getDrivers()`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);
 
-    result(null, res);
+    result(null, res[0]);
   });
 };
 // findbyId
 
 Driver.findById = (id, result) => {
-  let query = `SELECT * FROM drivers WHERE driverId = '${id}'`;
+  let query = `CALL getDriverById(${id})`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(err, null);
@@ -38,34 +39,42 @@ Driver.findById = (id, result) => {
 // create roles
 
 Driver.create = (driver, result) => {
-  mysql.query("INSERT INTO drivers SET ?", driver, (err, res) => {
-    if (err) {
-      return result(err, null);
-    }
+  const { fullName, phoneNumber, licenceNumber, dob, vehicleId } = driver;
+  mysql.query(
+    `CALL createDriver(? , ? , ? , ? , ?)`,
+    [fullName, phoneNumber, licenceNumber, dob, vehicleId],
+    (err, res) => {
+      if (err) {
+        return result(err, null);
+      }
 
-    result(null, { id: res.insertId, ...driver });
-  });
+      result(null, { id: res.insertId, ...driver });
+    }
+  );
 };
 
 //update
 
 Driver.findByIdAndUpdate = (id, driver, result) => {
-  let query = `UPDATE drivers SET fullName = '${driver.fullName}' , phoneNumber = '${driver.phoneNumber}' 
-  , licenceNumber = '${driver.licenceNumber}' , dob = '${driver.dob}' , vehicleId = '${driver.vehicleId}' WHERE driverId = '${id}'`;
+  const { fullName, phoneNumber, licenceNumber, dob, vehicleId, status } =
+    driver;
+  mysql.query(
+    `CALL updateDriver(${id} , ? , ? , ? , ? , ? , ?)`,
+    [fullName, phoneNumber, licenceNumber, dob, vehicleId, status],
+    (err, res) => {
+      if (err) return result(null, err);
 
-  mysql.query(query, (err, res) => {
-    if (err) return result(null, err);
+      // if (res.length == 0) return result({ kind: "not_found" }, null);
 
-    // if (res.length == 0) return result({ kind: "not_found" }, null);
-
-    result(null, { ...driver });
-  });
+      result(null, { ...driver });
+    }
+  );
 };
 
 // delete
 
 Driver.findByIdAndDelete = (id, result) => {
-  let query = `DELETE FROM drivers WHERE driverId = '${id}'`;
+  let query = `CALL deleteDriver(${id})`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);

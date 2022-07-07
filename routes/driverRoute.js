@@ -51,31 +51,19 @@ router.post("/", async (req, res) => {
 //update
 
 router.put("/:id", async (req, res) => {
-  const { fullName, phoneNumber, licenceNumber, dob, vehicleId } = req.body;
-
   // validation
 
   if (!req.body) return res.status(400).send("body cannot be empty");
   const { id } = req.params;
-  Driver.findByIdAndUpdate(
-    id,
-    new Driver({
-      fullName,
-      phoneNumber,
-      licenceNumber,
-      dob,
-      vehicleId,
-    }),
-    (err, data) => {
-      if (err) {
-        err.kind === "not_found"
-          ? res.status(400).send({ message: "driver not found with id " + id })
-          : res.status(500).json(err.message);
-      }
-
-      res.send(data);
+  Driver.findByIdAndUpdate(id, new Driver(req.body), (err, data) => {
+    if (err) {
+      err.kind === "not_found"
+        ? res.status(400).send({ message: "driver not found with id " + id })
+        : res.status(500).json(err.message);
     }
-  );
+
+    res.send(data);
+  });
 });
 
 // delete

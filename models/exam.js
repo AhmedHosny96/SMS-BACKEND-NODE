@@ -19,38 +19,69 @@ const Exam = function (exam) {
 
 // create new subject
 Exam.findAll = (result) => {
-  const query = "SELECT * FROM exams ORDER BY examId ASC ";
+  const query = `CALL getExams()`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);
 
-    result(null, res);
+    result(null, res[0]);
   });
 };
 // findbyId
 
 Exam.findById = (id, result) => {
-  let query = `SELECT * FROM exams WHERE examId = '${id}'`;
+  let query = `CALL getExamById(${id})`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(err, null);
 
     if (res.affectedRows == 0) return result({ kind: "not_found" }, null);
 
-    result(null, res);
+    result(null, res[0]);
   });
 };
 
 // create roles
 
 Exam.create = (exam, result) => {
-  mysql.query("INSERT INTO exams SET ?", exam, (err, res) => {
-    if (err) {
-      return result(err, null);
-    }
+  const {
+    name,
+    type,
+    date,
+    startTime,
+    endTime,
+    passMarks,
+    maxMarks,
+    termId,
+    academicId,
+    classId,
+    subjectId,
+    sectionId,
+  } = exam;
+  mysql.query(
+    `CALL createExam(?,?,?,?,?,?,?,?,?,?,?,?)`,
+    [
+      name,
+      type,
+      date,
+      startTime,
+      endTime,
+      passMarks,
+      maxMarks,
+      termId,
+      academicId,
+      classId,
+      subjectId,
+      sectionId,
+    ],
+    (err, res) => {
+      if (err) {
+        return result(err, null);
+      }
 
-    result(null, { id: res.insertId, ...exam });
-  });
+      result(null, { id: res.insertId, ...exam });
+    }
+  );
 };
 
 //update

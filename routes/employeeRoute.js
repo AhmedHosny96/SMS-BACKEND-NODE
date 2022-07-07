@@ -8,7 +8,7 @@ const uploadStorage = multer.diskStorage({
     cb(null, path.join("./uploads/"));
   },
   filename: (req, file, cb) => {
-    cb(null, req.body.title + file.originalname);
+    cb(null, file.originalname);
   },
 });
 
@@ -63,9 +63,12 @@ router.post("/", uploads.single("image"), async (req, res) => {
     email,
     country,
     city,
+    salary,
+    status,
     subCity,
-    // kebele,
-    // bankAccount,
+    kebele,
+    image,
+    bankAccount,
   } = req.body;
   //   // validation
   if (!req.body)
@@ -88,9 +91,11 @@ router.post("/", uploads.single("image"), async (req, res) => {
     country,
     city,
     subCity,
-    // kebele,
+    salary,
+    status,
+    kebele,
     image: req.file.filename,
-    // bankAccount,
+    bankAccount,
   });
   Employee.create(employee, (err, data) => {
     if (err) return res.status(500).send(err.message);

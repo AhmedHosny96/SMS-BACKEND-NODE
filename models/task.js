@@ -13,60 +13,67 @@ const Task = function (tasks) {
 
 // create new subject
 Task.findAll = (result) => {
-  const query =
-    "SELECT t.taskId , t.task , t.date , t.description , t.priority , t.status , u.username  FROM tasks t INNER JOIN users u ON t.userId = u.userId ORDER BY taskId ASC ";
+  const query = `CALL getTasks()`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);
 
-    result(null, res);
+    result(null, res[0]);
   });
 };
 // findbyId
 
 Task.findById = (id, result) => {
-  let query = `SELECT * FROM tasks WHERE taskId = '${id}'`;
+  let query = `CALL getTaskById(${id})`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(err, null);
 
     if (res.affectedRows == 0) return result({ kind: "not_found" }, null);
 
-    result(null, res);
+    result(null, res[0]);
   });
 };
 
 // create roles
 
-Task.create = (task, result) => {
-  mysql.query("INSERT INTO tasks SET ?", task, (err, res) => {
-    if (err) {
-      return result(err, null);
-    }
+Task.create = (tasks, result) => {
+  const { task, description, date, priority, status, userId } = tasks;
+  mysql.query(
+    `CALL createTask(?,?,?,?,?,?)`,
+    [task, description, date, priority, status, userId],
+    (err, res) => {
+      if (err) {
+        return result(err, null);
+      }
 
-    result(null, { id: res.insertId, ...task });
-  });
+      result(null, { id: res.insertId, ...tasks });
+    }
+  );
 };
 
 //update
 
-Task.findByIdAndUpdate = (id, task, result) => {
-  let query = `UPDATE tasks SET task = '${task.task}' , description = '${task.description}' ,  
-  date = '${task.date}' ,userId = '${task.userId}' WHERE taskId = '${id}'`;
+Task.findByIdAndUpdate = (id, tasks, result) => {
+  const { task, description, date, priority, status, userId } = tasks;
 
-  mysql.query(query, (err, res) => {
-    if (err) return result(null, err);
+  mysql.query(
+    `CALL updateTask(${id},?,?,?,?,?,?)`,
+    [task, description, date, priority, status, userId],
+    (err, res) => {
+      if (err) return result(null, err);
 
-    if (res.length == 0) return result({ kind: "not_found" }, null);
+      if (res.length == 0) return result({ kind: "not_found" }, null);
 
-    result(null, { ...task });
-  });
+      result(null, { ...tasks });
+    }
+  );
 };
 
 // delete
 
 Task.findByIdAndDelete = (id, result) => {
-  let query = `DELETE FROM tasks WHERE taskId = '${id}'`;
+  let query = `CALL deleteTasks(${id})`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);

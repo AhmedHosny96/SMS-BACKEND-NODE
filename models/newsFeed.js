@@ -6,63 +6,72 @@ const NewsFeed = function (feed) {
   this.title = feed.title;
   this.description = feed.description;
   this.attachment = feed.attachment;
-  this.roleId = feed.roleId || null;
+  this.date = feed.date;
 };
 
 // create new subject
 NewsFeed.findAll = (result) => {
-  const query = "SELECT * FROM newsFeed ORDER BY newsFeedId ASC ";
+  const query = `CALL getNewsfeed()`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);
 
-    result(null, res);
+    result(null, res[0]);
   });
 };
 // findbyId
 
 NewsFeed.findById = (id, result) => {
-  let query = `SELECT * FROM newsFeed WHERE newsFeedId = '${id}'`;
+  let query = `CALL getNewsFeedById(${id})`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(err, null);
 
     if (res.affectedRows == 0) return result({ kind: "not_found" }, null);
 
-    result(null, res);
+    result(null, res[0]);
   });
 };
 
 // create roles
 
 NewsFeed.create = (feed, result) => {
-  mysql.query("INSERT INTO newsFeed SET ?", feed, (err, res) => {
-    if (err) {
-      return result(err, null);
-    }
+  const { title, attachment, description, date } = feed;
+  mysql.query(
+    `CALL createNewsFeed(?,?,?,?)`,
+    [title, attachment, description, date],
+    (err, res) => {
+      if (err) {
+        return result(err, null);
+      }
 
-    result(null, { id: res.insertId, ...feed });
-  });
+      result(null, { id: res.insertId, ...feed });
+    }
+  );
 };
 
 //update
 
 NewsFeed.findByIdAndUpdate = (id, feed, result) => {
-  let query = `UPDATE newsFeed SET title = '${feed.title}' , description = '${feed.description}' ,   attachment = '${feed.attachment}', roleId = '${feed.roleId}'  WHERE newsFeedId = '${id}'`;
+  const { title, attachment, description, date } = feed;
 
-  mysql.query(query, (err, res) => {
-    if (err) return result(null, err);
+  mysql.query(
+    `CALL updateNewsFeed(${id},?,?,?,?)`,
+    [title, attachment, description, date],
+    (err, res) => {
+      if (err) return result(null, err);
 
-    if (res.length == 0) return result({ kind: "not_found" }, null);
+      if (res.length == 0) return result({ kind: "not_found" }, null);
 
-    result(null, { ...feed });
-  });
+      result(null, { ...feed });
+    }
+  );
 };
 
 // delete
 
 NewsFeed.findByIdAndDelete = (id, result) => {
-  let query = `DELETE FROM newsFeed WHERE newsFeedId = '${id}'`;
+  let query = `CALL deleteNewsFeed(${id})`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);

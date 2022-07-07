@@ -76,17 +76,29 @@ router.post("/", uploads.single("attachment"), async (req, res) => {
 });
 
 //update
-router.put("/:id", async (req, res) => {
+router.put("/:id", uploads.single("attachment"), async (req, res) => {
   const { id } = req.params;
-  Note.findByIdAndUpdate(id, new Note(req.body), (err, data) => {
-    if (err) {
-      err.kind === "not_found"
-        ? res.status(400).send({ message: "note not found with id " + id })
-        : res.status(500).json(err.message);
-    }
+  const { title, description, classId, sectionId, subjectId } = req.body;
+  Note.findByIdAndUpdate(
+    id,
+    new Note({
+      title,
+      description,
+      attachment: req.file.filename,
+      classId,
+      sectionId,
+      subjectId,
+    }),
+    (err, data) => {
+      if (err) {
+        err.kind === "not_found"
+          ? res.status(400).send({ message: "note not found with id " + id })
+          : res.status(500).json(err.message);
+      }
 
-    res.send(data);
-  });
+      res.send(data);
+    }
+  );
 });
 
 // delete

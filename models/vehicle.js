@@ -10,23 +10,23 @@ const Vehicle = function (vehicle) {
   this.noOfSeats = vehicle.noOfSeats;
   this.maximumStudents = vehicle.maximumStudents;
   this.rentedAmount = vehicle.rentedAmount;
-  this.vehicleTypeId = vehicle.vehicleTypeId || 1;
+  this.type = vehicle.type;
 };
 
 // create new subject
 Vehicle.findAll = (result) => {
-  const query = "SELECT * FROM vehicles ORDER BY vehicleId ASC ";
+  const query = "CALL getVehicles() ";
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);
 
-    result(null, res);
+    result(null, res[0]);
   });
 };
 // findbyId
 
 Vehicle.findById = (id, result) => {
-  let query = `SELECT * FROM vehicles WHERE vehicleId = '${id}'`;
+  let query = `CALL getVehicleById(${id})`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(err, null);
@@ -40,34 +40,75 @@ Vehicle.findById = (id, result) => {
 // create roles
 
 Vehicle.create = (vehicle, result) => {
-  mysql.query("INSERT INTO vehicles SET ?", vehicle, (err, res) => {
-    if (err) {
-      return result(err, null);
-    }
+  const {
+    type,
+    ownerName,
+    ownerPhoneNumber,
+    plateNumber,
+    noOfSeats,
+    maximumStudents,
+    rentedAmount,
+  } = vehicle;
 
-    result(null, { id: res.insertId, ...vehicle });
-  });
+  mysql.query(
+    `CALL createVehicle(?,?,?,?,?,?,?)`,
+    [
+      type,
+      ownerName,
+      ownerPhoneNumber,
+      plateNumber,
+      noOfSeats,
+      maximumStudents,
+      rentedAmount,
+    ],
+    (err, res) => {
+      if (err) {
+        return result(err, null);
+      }
+
+      result(null, { id: res.insertId, ...vehicle });
+    }
+  );
 };
 
 //update
 
 Vehicle.findByIdAndUpdate = (id, vehicle, result) => {
-  let query = `UPDATE vehicles SET plateNumber = '${vehicle.plateNumber}' , noOfSeats = '${vehicle.noOfSeats}' 
-  , maximumStudents = '${vehicle.maximumStudents}' , rentedAmount = '${vehicle.rentedAmount}' , vehicleTypeId = '${vehicle.vehicleTypeId}' WHERE vehicleId = '${id}'`;
+  const {
+    type,
+    ownerName,
+    ownerPhoneNumber,
+    plateNumber,
+    noOfSeats,
+    maximumStudents,
+    rentedAmount,
+  } = vehicle;
 
-  mysql.query(query, (err, res) => {
-    if (err) return result(null, err);
+  mysql.query(
+    `CALL updateVehicle(?,?,?,?,?,?,?,?)`,
+    [
+      type,
+      ownerName,
+      ownerPhoneNumber,
+      plateNumber,
+      noOfSeats,
+      maximumStudents,
+      rentedAmount,
+    ],
+    (err, res) => {
+      if (err) return result(null, err);
 
-    // if (res.length == 0) return result({ kind: "not_found" }, null);
+      // if (res.length == 0) return result({ kind: "not_found" }, null);
 
-    result(null, { ...vehicle });
-  });
+      result(null, { ...vehicle });
+    }
+  );
 };
 
 // delete
 
 Vehicle.findByIdAndDelete = (id, result) => {
-  let query = `DELETE FROM drivers WHERE vehicleId = '${id}'`;
+  let query = ` CALL deleteVehicle(${id})`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);

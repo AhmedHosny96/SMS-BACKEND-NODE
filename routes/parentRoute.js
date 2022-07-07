@@ -28,20 +28,22 @@ router.get("/:id", async (req, res) => {
 });
 // create status
 router.post("/", async (req, res) => {
-  const { fullName, phoneNumber, email, occupation, statusId } = req.body;
+  const { fullName, phoneNumber, email, type, occupation, studentId } =
+    req.body;
   //   // validation
   if (!req.body)
     return res.status(400).send({ message: "Content can't be empty" });
 
   //
-  const status = new Parent({
+  const parent = new Parent({
     fullName,
     phoneNumber,
-    email: email,
+    email,
     occupation,
-    statusId,
+    type,
+    studentId,
   });
-  Parent.create(status, (err, data) => {
+  Parent.create(parent, (err, data) => {
     if (err) return res.status(500).send(err.message);
     res.send(data);
   });
@@ -50,7 +52,7 @@ router.post("/", async (req, res) => {
 //update
 
 router.put("/:id", async (req, res) => {
-  const { fullName, phoneNumber, email, occupation, statusId } = req.body;
+  const { fullName, phoneNumber, email, occupation, studentId } = req.body;
 
   // validation
 
@@ -63,7 +65,7 @@ router.put("/:id", async (req, res) => {
       phoneNumber,
       email,
       occupation,
-      statusId: statusId,
+      studentId,
     }),
     (err, data) => {
       if (err) {
@@ -82,7 +84,7 @@ router.delete("/:id", async (req, res) => {
   Parent.findByIdAndDelete(req.params.id, (err, data) => {
     if (err) {
       err.kind === "not_found"
-        ? res.status(400).send("subject not found with id " + req.params.id)
+        ? res.status(400).send("parent not found with id " + req.params.id)
         : res.status(500).json(err.message);
     }
 

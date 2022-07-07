@@ -10,18 +10,18 @@ const Subject = function (subject) {
 
 // create new subject
 Subject.findAll = (result) => {
-  const query = "SELECT * FROM subjects ORDER BY subjectId ASC ";
+  const query = "CALL getSubjects()";
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);
 
-    result(null, res);
+    result(null, res[0]);
   });
 };
 // findbyId
 
 Subject.findById = (id, result) => {
-  let query = `SELECT * FROM subjects WHERE subjectId = '${id}'`;
+  let query = `CALL getSubject(${id})`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(err, null);
@@ -35,33 +35,43 @@ Subject.findById = (id, result) => {
 // create roles
 
 Subject.create = (subject, result) => {
-  mysql.query("INSERT INTO subjects SET ?", subject, (err, res) => {
-    if (err) {
-      return result(err, null);
-    }
+  const { name, code, description } = subject;
 
-    result(null, { id: res.insertId, ...subject });
-  });
+  mysql.query(
+    `CALL createSubject(? , ? , ? )`,
+    [name, code, description],
+    (err, res) => {
+      if (err) {
+        return result(err, null);
+      }
+
+      result(null, { id: res.insertId, ...subject });
+    }
+  );
 };
 
 //update
 
 Subject.findByIdAndUpdate = (id, subject, result) => {
-  let query = `UPDATE subjects SET name = '${subject.name}' , code = '${subject.code}' , description = '${subject.description}' WHERE subjectId = '${id}'`;
+  const { name, code, description } = subject;
 
-  mysql.query(query, (err, res) => {
-    if (err) return result(null, err);
+  mysql.query(
+    `CALL updateSubject(${id})`,
+    [name, code, description],
+    (err, res) => {
+      if (err) return result(null, err);
 
-    // if (res.length == 0) return result({ kind: "not_found" }, null);
+      // if (res.length == 0) return result({ kind: "not_found" }, null);
 
-    result(null, { ...subject });
-  });
+      result(null, { ...subject });
+    }
+  );
 };
 
 // delete
 
 Subject.findByidAndDelete = (id, result) => {
-  let query = `DELETE FROM subjects WHERE subjectId = '${id}'`;
+  let query = `CALL deleteSubject(${id})`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);

@@ -50,31 +50,21 @@ router.post("/", async (req, res) => {
 //update
 
 router.put("/:id", async (req, res) => {
-  const { eventType, eventFor, fromDate, toDate, description } = req.body;
+  // const { eventType, eventFor, fromDate, toDate, description } = req.body;
 
   // validation
 
   if (!req.body) return res.status(400).send("body cannot be empty");
   const { id } = req.params;
-  Event.findByIdAndUpdate(
-    id,
-    new Event({
-      eventType,
-      eventFor,
-      fromDate,
-      toDate,
-      description,
-    }),
-    (err, data) => {
-      if (err) {
-        err.kind === "not_found"
-          ? res.status(400).send({ message: "event not found with id " + id })
-          : res.status(500).json(err.message);
-      }
-
-      res.send(data);
+  Event.findByIdAndUpdate(id, new Event(req.body), (err, data) => {
+    if (err) {
+      err.kind === "not_found"
+        ? res.status(400).send({ message: "event not found with id " + id })
+        : res.status(500).json(err.message);
     }
-  );
+
+    res.send(data);
+  });
 });
 
 // delete

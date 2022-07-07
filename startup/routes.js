@@ -13,7 +13,7 @@ const teacherRoute = require("../routes/teacherRoute");
 const institutionRoute = require("../routes/institutionRoute");
 const driverRoute = require("../routes/driverRoute");
 const vehicleRoute = require("../routes/vehicleRoute");
-const vehicleTypeRoute = require("../routes/vehicleTypeRoute");
+const destinationRoute = require("../routes/destinationRoute");
 const shiftRoute = require("../routes/shiftRoute");
 const periodRoute = require("../routes/periodRoute");
 const timetableRoute = require("../routes/timetableRoute");
@@ -32,6 +32,9 @@ const jobTitleRoute = require("../routes/jobTitleRoute");
 const leaveTypeRoute = require("../routes/leaveTypeRoute");
 const leaveRoute = require("../routes/leaveRoute");
 const employeeRoute = require("../routes/employeeRoute");
+const studentDocumentRoute = require("../routes/studentDocumentRoute");
+const assetRoute = require("../routes/assetRoute");
+const visitorRoute = require("../routes/visitorRoute");
 
 module.exports = (app) => {
   app.use(express.json());
@@ -49,7 +52,7 @@ module.exports = (app) => {
   app.use("/api/institution", institutionRoute);
   app.use("/api/drivers", driverRoute);
   app.use("/api/vehicles", vehicleRoute);
-  app.use("/api/vehicleType", vehicleTypeRoute);
+  app.use("/api/routes", destinationRoute);
   app.use("/api/shifts", shiftRoute);
   app.use("/api/periods", periodRoute);
   app.use("/api/timetable", timetableRoute);
@@ -62,12 +65,15 @@ module.exports = (app) => {
   app.use("/api/studentAttendance", studentAttendanceRoute);
   app.use("/api/newsfeed", newsFeedRoute);
   app.use("/api/studentAdmission", studentRoute);
+  app.use("/api/studentDocuments", studentDocumentRoute);
   app.use("/api/events", eventRoute);
   app.use("/api/departments", departmentRoute);
   app.use("/api/jobTitles", jobTitleRoute);
   app.use("/api/leaveTypes", leaveTypeRoute);
   app.use("/api/leaves", leaveRoute);
   app.use("/api/employees", employeeRoute);
+  app.use("/api/assets", assetRoute);
+  app.use("/api/visitors", visitorRoute);
 
   app.use(error);
 };

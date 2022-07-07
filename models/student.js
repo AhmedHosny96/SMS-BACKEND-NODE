@@ -2,92 +2,186 @@ const mysql = require("../config/db");
 
 // constructor
 
-const Student = function (teacher) {
-  this.academicId = teacher.academicId;
-  this.uniqueId = teacher.uniqueId;
-  this.joinedDate = teacher.joinedDate;
-  this.classId = teacher.classId;
-  this.sectionId = teacher.sectionId;
-  this.rollNo = teacher.rollNo;
-  this.firstName = teacher.firstName;
-  this.middleName = teacher.middleName;
-  this.lastName = teacher.lastName;
-  this.dob = teacher.dob;
-  this.gender = teacher.gender;
-  this.birthPlace = teacher.birthPlace;
-  this.nationality = teacher.nationality;
-  this.country = teacher.country;
-  this.city = teacher.city;
-  this.district = teacher.district;
-  this.kebele = teacher.kebele;
-  this.phone = teacher.phone;
-  this.previousSchoolName = teacher.previousSchoolName;
-  this.previousSchoolAddress = teacher.previousSchoolAddress;
-  this.previousQualification = teacher.previousQualification;
+const Student = function (student) {
+  this.academicId = student.academicId;
+  this.uniqueId = student.uniqueId;
+  this.joinedDate = student.joinedDate;
+  this.classId = student.classId;
+  this.sectionId = student.sectionId;
+  this.rollNo = student.rollNo;
+  this.firstName = student.firstName;
+  this.middleName = student.middleName;
+  this.lastName = student.lastName;
+  this.dob = student.dob;
+  this.gender = student.gender;
+  this.birthPlace = student.birthPlace;
+  this.nationality = student.nationality;
+  this.country = student.country;
+  this.city = student.city;
+  this.subCity = student.subCity;
+  this.kebele = student.kebele;
+  this.phone = student.phone;
+  this.image = student.image;
+  this.previousSchoolName = student.previousSchoolName;
+  this.previousSchoolAddress = student.previousSchoolAddress;
+  this.previousQualification = student.previousQualification;
+  this.status = student.status || "Active";
 };
 
 // create new subject
 Student.findAll = (result) => {
-  const query = "SELECT * FROM students ORDER BY studentId ASC ";
+  const query = `CALL getStudents()`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);
 
-    result(null, res);
+    result(null, res[0]);
   });
 };
 // findbyId
 
 Student.findById = (id, result) => {
-  let query = `SELECT * FROM students WHERE studentId = '${id}'`;
+  let query = `CALL getStudentById(${id})`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(err, null);
 
     if (res.affectedRows == 0) return result({ kind: "not_found" }, null);
 
-    result(null, res);
+    result(null, res[0]);
   });
 };
 
 // create roles
 
-Student.create = (parent, result) => {
-  mysql.query("INSERT INTO students SET ?", parent, (err, res) => {
-    if (err) {
-      return result(err, null);
-    }
+Student.create = (student, result) => {
+  const {
+    academicId,
+    uniqueId,
+    joinedDate,
+    classId,
+    sectionId,
+    rollNo,
+    firstName,
+    middleName,
+    lastName,
+    dob,
+    gender,
+    birthPlace,
+    nationality,
+    country,
+    city,
+    subCity,
+    kebele,
+    phone,
+    previousSchoolName,
+    previosSchoolAddress,
+    previousQualification,
+    image,
+  } = student;
+  mysql.query(
+    `CALL createStudent(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+    [
+      academicId,
+      uniqueId,
+      joinedDate,
+      classId,
+      sectionId,
+      rollNo,
+      firstName,
+      middleName,
+      lastName,
+      dob,
+      gender,
+      birthPlace,
+      nationality,
+      country,
+      city,
+      subCity,
+      kebele,
+      phone,
+      previousSchoolName,
+      previosSchoolAddress,
+      previousQualification,
+      image,
+    ],
+    (err, res) => {
+      if (err) {
+        return result(err, null);
+      }
 
-    result(null, { id: res.insertId, ...parent });
-  });
+      result(null, { id: res.insertId, ...student });
+    }
+  );
 };
 
 //update
 
 Student.findByIdAndUpdate = (id, teacher, result) => {
-  let query = `UPDATE students SET academicId = '${teacher.academicId}' , uniqueId = '${teacher.uniqueId}' , 
-  joinedDate = '${teacher.joinedDate}' , classId = '${teacher.classId}' , 
-  sectionId = '${teacher.sectionId}' , rollNo = '${teacher.rollNo}' , 
-  firstName = '${teacher.firstName}' , middleName = '${teacher.middleName}' , 
-  lastName = '${teacher.lastName}' , dob = '${teacher.dob}' , gender = '${teacher.gender}' , birthPlace = '${teacher.birthPlace}' , 
-  nationality = '${teacher.nationality}' , country = '${teacher.country}' , 
-  city = '${teacher.city}' , district = '${teacher.district}' ,  kebele = '${teacher.kebele}' , phone = '${teacher.phone}' , 
-  previousSchoolName = '${teacher.previousSchoolName}' , previosSchoolAddress = '${teacher.previosSchoolAddress}' , 
-  previousSchoolQualification = '${teacher.previousSchoolQualification}'  WHERE studentId = '${id}'`;
+  const {
+    academicId,
+    uniqueId,
+    joinedDate,
+    classId,
+    sectionId,
+    rollNo,
+    firstName,
+    middleName,
+    lastName,
+    dob,
+    gender,
+    birthPlace,
+    nationality,
+    country,
+    city,
+    subCity,
+    kebele,
+    phone,
+    previousSchoolName,
+    previosSchoolAddress,
+    previousQualification,
+    image,
+  } = student;
+  mysql.query(
+    `CALL updateStudent(${id} ,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? )`,
+    [
+      academicId,
+      uniqueId,
+      joinedDate,
+      classId,
+      sectionId,
+      rollNo,
+      firstName,
+      middleName,
+      lastName,
+      dob,
+      gender,
+      birthPlace,
+      nationality,
+      country,
+      city,
+      subCity,
+      kebele,
+      phone,
+      previousSchoolName,
+      previosSchoolAddress,
+      previousQualification,
+      image,
+    ],
+    (err, res) => {
+      if (err) return result(null, err);
 
-  mysql.query(query, (err, res) => {
-    if (err) return result(null, err);
+      if (res.length == 0) return result({ kind: "not_found" }, null);
 
-    if (res.length == 0) return result({ kind: "not_found" }, null);
-
-    result(null, { ...teacher });
-  });
+      result(null, { ...teacher });
+    }
+  );
 };
 
 // delete
 
 Student.findByIdAndDelete = (id, result) => {
-  let query = `DELETE FROM students WHERE studentId = '${id}'`;
+  let query = `CALL deleteStudent(${id})`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);

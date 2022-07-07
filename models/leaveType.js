@@ -7,31 +7,33 @@ const LeaveType = function (leaveType) {
 
 // find all
 LeaveType.findAll = (result) => {
-  let query = `SELECT * FROM leaveTypes ORDER BY leaveTypeId`;
+  let query = `CALL getLeaveTypes()`;
 
   mysql.query(query, (err, data) => {
     if (err) return result(null, err);
 
-    result(null, data);
+    result(null, data[0]);
   });
 };
 
 // findbyId
 
 LeaveType.findById = (id, result) => {
-  let query = `SELECT * FROM leaveTypes WHERE leaveTypeId = '${id}'`;
+  let query = `CALL getLeaveById(${id})`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(err, null);
 
     if (res.affectedRows == 0) return result({ kind: "not_found" }, null);
 
-    result(null, res);
+    result(null, res[0]);
   });
 };
 // create status
 LeaveType.create = (leaveType, result) => {
-  mysql.query("INSERT INTO leaveTypes SET?", leaveType, (err, res) => {
+  const { type, allowedDays } = leaveType;
+
+  mysql.query("CALL createLeave(?,?)", [type, allowedDays], (err, res) => {
     if (err) return result(err, null);
 
     result(null, { id: res.insertId, ...leaveType });
@@ -41,21 +43,25 @@ LeaveType.create = (leaveType, result) => {
 // update
 
 LeaveType.findByIdAndUpdate = (id, leaveType, result) => {
-  let query = `UPDATE leaveTypes SET type = '${leaveType.type}' , allowedDays = '${leaveType.allowedDays}' WHERE leaveTypeId = '${id}'`;
+  const { type, allowedDays } = leaveType;
 
-  mysql.query(query, (err, res) => {
-    if (err) return result(null, err);
+  mysql.query(
+    `CALL updateLeave(${id} , ? , ? )`,
+    [type, allowedDays],
+    (err, res) => {
+      if (err) return result(null, err);
 
-    // if (res.length == 0) return result({ kind: "not_found" }, null);
+      // if (res.length == 0) return result({ kind: "not_found" }, null);
 
-    result(null, { ...leaveType });
-  });
+      result(null, { ...leaveType });
+    }
+  );
 };
 
 // delete
 
 LeaveType.findByidAndDelete = (id, result) => {
-  let query = `DELETE FROM leaveTypes WHERE leaveTypeId = '${id}'`;
+  let query = `CALL deleteLeave(${id})`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);

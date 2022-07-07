@@ -6,19 +6,19 @@ const Department = function (status) {
 
 // find all
 Department.findAll = (result) => {
-  let query = `SELECT * FROM departments ORDER BY departmentId`;
+  let query = `CALL getDeparments()`;
 
   mysql.query(query, (err, data) => {
     if (err) return result(null, err);
 
-    result(null, data);
+    result(null, data[0]);
   });
 };
 
 // findbyId
 
 Department.findById = (id, result) => {
-  let query = `SELECT * FROM departments WHERE departmentId = '${id}'`;
+  let query = `CALL getDepartmentById(${id})`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(err, null);
@@ -30,7 +30,7 @@ Department.findById = (id, result) => {
 };
 // create status
 Department.create = (department, result) => {
-  mysql.query("INSERT INTO departments SET?", department, (err, res) => {
+  mysql.query(`CALL createDepartment(?)`, [department.name], (err, res) => {
     if (err) return result(err, null);
 
     result(null, { id: res.insertId, ...department });
@@ -39,22 +39,20 @@ Department.create = (department, result) => {
 
 // update
 
-Department.findByIdAndUpdate = (id, status, result) => {
-  let query = `UPDATE departments SET name = '${status.name}' WHERE departmentId = '${id}'`;
-
-  mysql.query(query, (err, res) => {
+Department.findByIdAndUpdate = (id, department, result) => {
+  mysql.query(`CALL updateDepartment(${id})`, [department.name], (err, res) => {
     if (err) return result(null, err);
 
     // if (res.length == 0) return result({ kind: "not_found" }, null);
 
-    result(null, { ...status });
+    result(null, { ...department });
   });
 };
 
 // delete
 
 Department.findByidAndDelete = (id, result) => {
-  let query = `DELETE FROM departments WHERE departmentId = '${id}'`;
+  let query = `CALL deleteDepartment(${id})`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);

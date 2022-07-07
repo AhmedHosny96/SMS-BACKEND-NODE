@@ -28,27 +28,45 @@ router.get("/:id", async (req, res) => {
   });
 });
 
+// GET TIME TABLE BY SECTION
+
+router.get("/", async (req, res) => {
+  var sectionId = req.query.sectionId;
+  console.log(req.query);
+  Timetable.findBySection(sectionId, (err, data) => {
+    if (err) {
+      res.send(err.message);
+    }
+
+    if (data.length === 0)
+      return res.status(400).send("timetable not found with section id " + id);
+    res.send(data);
+  });
+});
+
 // create status
 router.post("/", async (req, res) => {
   //   // validation
   if (!req.body)
     return res.status(400).send({ message: "Content can't be empty" });
 
-  const { date, periodId, classId, sectionId, subjectId, shiftId } = req.body;
+  const { day, periodId, classId, sectionId, subjectId } = req.body;
 
   //
-  const status = new Timetable({
-    date,
+  const timetable = new Timetable({
+    day,
     periodId,
     classId,
     sectionId,
     subjectId,
-    shiftId,
   });
 
-  Timetable.create(status, (err, data) => {
-    if (err && err.code == "ER_DUP_ENTRY")
-      return res.status(400).send("record already exists");
+  Timetable.create(timetable, (err, data) => {
+    // if (err && err.code == "ER_DUP_ENTRY")
+    //   return res.status(400).send("record already exists");
+
+    if (err) return res.status(400).send(err.message);
+
     res.send(data);
   });
 });

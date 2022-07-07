@@ -14,8 +14,7 @@ const Leave = function (leave) {
 
 // create new subject
 Leave.findAll = (result) => {
-  const query =
-    "SELECT l.leaveId , l.fromDate , l.toDate , l.status , l.approvedBy , t.type AS leaveType , concat (e.firstName , ' ' , e.middleName , e.lastName) AS employeeName   FROM leaves l INNER JOIN leaveTypes t ON l.leaveTypeId = t.leaveTypeId  INNER JOIN employees e ON l.employeeId = e.employeeId   ORDER BY leaveId ASC ";
+  const query = `CALL getLeaveRequests()`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);
@@ -26,7 +25,7 @@ Leave.findAll = (result) => {
 // findbyId
 
 Leave.findById = (id, result) => {
-  let query = `SELECT * FROM leaves WHERE leaveId = '${id}'`;
+  let query = `CALL getLeaveRequestById(${id})`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(err, null);
@@ -40,32 +39,40 @@ Leave.findById = (id, result) => {
 // create roles
 
 Leave.create = (leave, result) => {
-  mysql.query("INSERT INTO leaves SET ?", leave, (err, res) => {
-    if (err) {
-      return result(err, null);
-    }
+  const { employeeId, leaveTypeId, fromDate, toDate, remark } = leave;
+  mysql.query(
+    `CALL createLeaveRequest(?,?,?,?,?)`,
+    [employeeId, leaveTypeId, fromDate, toDate, remark],
+    (err, res) => {
+      if (err) {
+        return result(err, null);
+      }
 
-    result(null, { id: res.insertId, ...leave });
-  });
+      result(null, { id: res.insertId, ...leave });
+    }
+  );
 };
 
 //update
 
 Leave.findByIdAndUpdate = (id, event, result) => {
-  let query = `UPDATE leaves SET employeeId = '${event.employeeId}' , leaveTypeId = '${event.leaveTypeId}' 
-  , fromDate = '${event.fromDate}' , toDate = '${event.toDate}'  , remark = '${event.remark}' , status = '${event.status}' , approvedBy = '${event.approvedBy}'  WHERE leaveId = '${id}'`;
+  const { employeeId, leaveTypeId, fromDate, toDate, remark, status } = leave;
 
-  mysql.query(query, (err, res) => {
-    if (err) return result(null, err);
+  mysql.query(
+    `CALL updateLeaveRequest(${id}, ?,?,?,?,?)`,
+    [employeeId, leaveTypeId, fromDate, toDate, remark, status],
+    (err, res) => {
+      if (err) return result(null, err);
 
-    result(null, { ...event });
-  });
+      result(null, { ...event });
+    }
+  );
 };
 
 // delete
 
 Leave.findByIdAndDelete = (id, result) => {
-  let query = `DELETE FROM leaves WHERE leaveId = '${id}'`;
+  let query = `CALL deleteLeaveRequest(${id})`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);

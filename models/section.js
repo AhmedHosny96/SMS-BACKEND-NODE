@@ -8,54 +8,62 @@ const Section = function (section) {
 
 //
 Section.findAll = (result) => {
-  let query = `SELECT s.sectionId , s.name , s.maximumStudents  , c.name AS class FROM sections s  JOIN classes c ON 
-  s.classId AND c.classId 
-  `;
+  let query = `CALL getSections()`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);
 
-    result(null, res);
+    result(null, res[0]);
   });
 };
 
 // by id
 Section.findById = (id, result) => {
-  let query = `SELECT id , classId , maximumStudents FROM sections WHERE sectionId = '${id}'`;
+  let query = `CALL getSectionById(${id})`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);
 
-    result(null, res);
+    result(null, res[0]);
   });
 };
 
 Section.create = (section, result) => {
-  mysql.query(`INSERT INTO sections SET ?`, section, (err, res) => {
-    if (err) return result(null, err);
+  const { name, maximumStudents, classId } = section;
 
-    result(null, { id: res.insertId, ...section });
-  });
+  mysql.query(
+    `CALL createSection(? , ? , ?)`,
+    [name, maximumStudents, classId],
+    (err, res) => {
+      if (err) return result(null, err);
+
+      result(null, { id: res.insertId, ...section });
+    }
+  );
 };
 
 //update
 
 Section.findByIdAndUpdate = (id, section, result) => {
-  let query = `UPDATE sections SET name = '${section.name}'  , maximumStudents = '${section.maximumStudents}' , class_id = '${section.calssId}' WHERE sectionId = '${id}'`;
+  const { name, maximumStudents, classId } = section;
 
-  mysql.query(query, (err, res) => {
-    if (err) return result(null, err);
+  mysql.query(
+    `CALL updateSection(${id})`,
+    [name, maximumStudents, classId],
+    (err, res) => {
+      if (err) return result(null, err);
 
-    // if (res.length == 0) return result({ kind: "not_found" }, null);
+      // if (res.length == 0) return result({ kind: "not_found" }, null);
 
-    result(null, { ...data });
-  });
+      result(null, { ...data });
+    }
+  );
 };
 
 // delete
 
 Section.findByIdAndDelete = (id, result) => {
-  let query = `DELETE FROM sections WHERE sectionId = '${id}'`;
+  let query = `CALL deleteSection(${id})`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);

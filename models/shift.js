@@ -10,18 +10,18 @@ const Shift = function (shift) {
 
 // create new subject
 Shift.findAll = (result) => {
-  const query = "SELECT * FROM shifts ORDER BY shiftId ASC ";
+  const query = "CALL getShifts() ";
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);
 
-    result(null, res);
+    result(null, res[0]);
   });
 };
 // findbyId
 
 Shift.findById = (id, result) => {
-  let query = `SELECT * FROM shifts WHERE shiftId = '${id}'`;
+  let query = `CALL getShiftById(${id})`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(err, null);
@@ -35,33 +35,42 @@ Shift.findById = (id, result) => {
 // create roles
 
 Shift.create = (shift, result) => {
-  mysql.query("INSERT INTO shifts SET ?", shift, (err, res) => {
-    if (err) {
-      return result(err, null);
-    }
+  const { name, startTime, endTime } = shift;
+  mysql.query(
+    `CALL createShift(?,?,?)`,
+    [name, startTime, endTime],
+    (err, res) => {
+      if (err) {
+        return result(err, null);
+      }
 
-    result(null, { id: res.insertId, ...shift });
-  });
+      result(null, { id: res.insertId, ...shift });
+    }
+  );
 };
 
 //update
 
 Shift.findByIdAndUpdate = (id, shift, result) => {
-  let query = `UPDATE shifts SET name = '${shift.name}' , startTime = '${shift.startTime}' , endTime = '${shift.endTime}' WHERE shiftId = '${id}'`;
+  const { name, startTime, endTime } = shift;
 
-  mysql.query(query, (err, res) => {
-    if (err) return result(null, err);
+  mysql.query(
+    `CALL updateShift(${id} , ?,?,?)`,
+    [name, startTime, endTime],
+    (err, res) => {
+      if (err) return result(null, err);
 
-    // if (res.length == 0) return result({ kind: "not_found" }, null);
+      // if (res.length == 0) return result({ kind: "not_found" }, null);
 
-    result(null, { ...shift });
-  });
+      result(null, { ...shift });
+    }
+  );
 };
 
 // delete
 
 Shift.findByidAndDelete = (id, result) => {
-  let query = `DELETE FROM shifts WHERE shiftId = '${id}'`;
+  let query = `CALL deleteShift(${id})`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);

@@ -7,13 +7,16 @@ const Parent = function (parent) {
   this.fullName = parent.fullName;
   this.phoneNumber = parent.phoneNumber;
   this.email = parent.email;
+  this.type = parent.type;
   this.occupation = parent.occupation;
-  this.statusId = parent.statusId || 1;
+  this.studentId = parent.studentId;
+  this.status = parent.status || "Active";
 };
 
 // create new subject
 Parent.findAll = (result) => {
-  const query = "SELECT * FROM parents ORDER BY parentId ASC ";
+  const query =
+    "SELECT p.parentId , p.fullName , p.status ,  p.phoneNumber , p.email , p.occupation FROM parents p ORDER BY parentId ASC ";
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);

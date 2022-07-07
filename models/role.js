@@ -8,32 +8,33 @@ const Role = function (role) {
 // get all roles
 
 Role.findAll = (result) => {
-  const query = "SELECT * FROM roles ORDER BY roleId ASC ";
+  const query = "CALL getRoles()";
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);
 
-    result(null, res);
+    result(null, res[0]);
   });
 };
 // findbyId
 
 Role.findById = (id, result) => {
-  let query = `SELECT * FROM roles WHERE roleId = '${id}'`;
+  let query = `CALL getRoleById(${id})`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(err, null);
 
     if (res.affectedRows == 0) return result({ kind: "not_found" }, null);
 
-    result(null, res);
+    result(null, res[0]);
   });
 };
 
 // create roles
 
 Role.create = (role, result) => {
-  mysql.query("INSERT INTO roles SET ?", role, (err, res) => {
+  const { name } = role;
+  mysql.query(`CALL createRole(?)`, [name], (err, res) => {
     if (err) {
       return result(err, null);
     }
@@ -45,9 +46,9 @@ Role.create = (role, result) => {
 //update
 
 Role.findByIdAndUpdate = (id, role, result) => {
-  let query = `UPDATE roles SET name = '${role.name}' WHERE roleId = '${id}'`;
+  const { name } = role;
 
-  mysql.query(query, (err, res) => {
+  mysql.query(`CALL updateRole(${id} , ?)`, [name], (err, res) => {
     if (err) return result(null, err);
 
     // if (res.length == 0) return result({ kind: "not_found" }, null);
@@ -59,7 +60,7 @@ Role.findByIdAndUpdate = (id, role, result) => {
 // delete
 
 Role.findByidAndDelete = (id, result) => {
-  let query = `DELETE FROM roles WHERE roleId = '${id}'`;
+  let query = `CALL deleteRole(${id})`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);

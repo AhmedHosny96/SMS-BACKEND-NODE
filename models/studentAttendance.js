@@ -3,7 +3,6 @@ const mysql = require("../config/db");
 // constructor
 
 const studentAttendance = function (attendance) {
-  this.name = attendance.name;
   this.studentId = attendance.studentId;
   this.date = attendance.date;
   this.periodId = attendance.periodId;
@@ -12,7 +11,10 @@ const studentAttendance = function (attendance) {
 
 // create new subject
 studentAttendance.findAll = (result) => {
-  const query = "SELECT * FROM studentAttendance ORDER BY attendanceId ASC ";
+  const query = `SELECT a.attendanceId , a.date , a.status  , p.name AS period , concat (s.firstName , ' ' , s.middleName , ' ', s.lastName) AS fullName
+  FROM studentAttendance a INNER JOIN periods p ON a.periodId = p.periodId INNER JOIN students s ON a.studentId = s.studentId
+  INNER JOIN classes c ON s.classId = c.classId
+  ORDER BY attendanceId ASC`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);

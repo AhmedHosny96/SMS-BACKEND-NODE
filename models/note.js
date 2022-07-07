@@ -13,61 +13,69 @@ const Note = function (timetable) {
 
 // create new subject
 Note.findAll = (result) => {
-  const query = `SELECT n.noteId , n.title , n.description , n.attachment , c.name AS class , s.name AS subject 
-  FROM notes n INNER JOIN subjects s ON n.subjectId = s.subjectId INNER JOIN classes c ON n.classId = c.classId
-  ORDER BY noteId ASC`;
+  const query = `CALL getNotes()`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);
 
-    result(null, res);
+    result(null, res[0]);
   });
 };
 // findbyId
 
 Note.findById = (id, result) => {
-  let query = `SELECT * FROM notes WHERE noteId = '${id}'`;
+  let query = `CALL getNoteById(${id})`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(err, null);
 
     if (res.affectedRows == 0) return result({ kind: "not_found" }, null);
 
-    result(null, res);
+    result(null, res[0]);
   });
 };
 
 // create roles
 
 Note.create = (note, result) => {
-  mysql.query("INSERT INTO notes SET ?", note, (err, res) => {
-    if (err) {
-      return result(err, null);
-    }
+  const { title, description, attachment, classId, sectionId, subjectId } =
+    note;
 
-    result(null, { id: res.insertId, ...note });
-  });
+  mysql.query(
+    `call createNote(?,?,?,?,?,?)`,
+    [title, description, attachment, classId, sectionId, subjectId],
+    (err, res) => {
+      if (err) {
+        return result(err, null);
+      }
+
+      result(null, { id: res.insertId, ...note });
+    }
+  );
 };
 
 //update
 
 Note.findByIdAndUpdate = (id, note, result) => {
-  let query = `UPDATE notes SET title = '${note.title}' , description = '${note.description}' ,  attachment = '${note.attachment}', classId = '${note.classId}' 
-  ,sectionId = '${note.sectionId}' ,subjectId = '${note.subjectId}' WHERE noteId = '${id}'`;
+  const { title, description, attachment, classId, sectionId, subjectId } =
+    note;
+  mysql.query(
+    `CALL updateNote(${id}, ?,?,?,?,?,?)`,
+    [title, description, attachment, classId, sectionId, subjectId],
+    (err, res) => {
+      if (err) return result(null, err);
 
-  mysql.query(query, (err, res) => {
-    if (err) return result(null, err);
+      if (res.length == 0) return result({ kind: "not_found" }, null);
 
-    if (res.length == 0) return result({ kind: "not_found" }, null);
-
-    result(null, { ...note });
-  });
+      result(null, { ...note });
+    }
+  );
 };
 
 // delete
 
 Note.findByIdAndDelete = (id, result) => {
-  let query = `DELETE FROM notes WHERE noteId = '${id}'`;
+  let query = `CALL deleteNote(${id})`;
 
   mysql.query(query, (err, res) => {
     if (err) return result(null, err);
