@@ -1,184 +1,89 @@
-const mysql = require("../config/db");
+module.exports = (sequelize, DataTypes) => {
+  const Employee = sequelize.define(
+    "employees",
+    {
+      employeeId: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
+      },
 
-// constructor
+      joinedDate: {
+        type: DataTypes.DATE,
+        allowNull: false,
+      },
+      qualification: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      totalExperience: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      firstName: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      middleName: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      lastName: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
 
-const Employee = function (employee) {
-  this.departmentId = employee.departmentId;
-  this.titleId = employee.titleId;
-  this.joinedDate = employee.joinedDate;
-  this.qualification = employee.qualification;
-  this.totalExperience = employee.totalExperience;
-  this.firstName = employee.firstName;
-  this.middleName = employee.middleName;
-  this.lastName = employee.lastName;
-  this.dob = employee.dob;
-  this.gender = employee.gender;
-  this.phoneNumber = employee.phoneNumber;
-  this.email = employee.email;
-  this.country = employee.country;
-  this.city = employee.city;
-  this.subCity = employee.subCity;
-  this.kebele = employee.kebele;
-  this.image = employee.image;
-  this.bankAccount = employee.bankAccount;
-  this.salary = employee.salary;
-  this.status = employee.status || "Active";
-};
+      dob: {
+        type: DataTypes.DATE,
+        allowNull: false,
+      },
 
-// create new subject
-Employee.findAll = (result) => {
-  const query = `CALL getEmployees()`;
-
-  mysql.query(query, (err, res) => {
-    if (err) return result(null, err);
-
-    result(null, res[0]);
-  });
-};
-// findbyId
-
-Employee.findById = (id, result) => {
-  let query = `CALL getEmployeeById(${id})`;
-
-  mysql.query(query, (err, res) => {
-    if (err) return result(err, null);
-
-    if (res.affectedRows == 0) return result({ kind: "not_found" }, null);
-
-    result(null, res);
-  });
-};
-
-// create roles
-
-Employee.create = (employee, result) => {
-  const {
-    departmentId,
-    titleId,
-    joinedDate,
-    qualification,
-    totalExperience,
-    firstName,
-    middleName,
-    lastName,
-    dob,
-    gender,
-    phoneNumber,
-    email,
-    country,
-    city,
-    subCity,
-    kebele,
-    image,
-    bankAccount,
-    salary,
-    status,
-  } = employee;
-
-  mysql.query(
-    `CALL createEmployee(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
-    [
-      departmentId,
-      titleId,
-      joinedDate,
-      qualification,
-      totalExperience,
-      firstName,
-      middleName,
-      lastName,
-      dob,
-      gender,
-      phoneNumber,
-      email,
-      country,
-      city,
-      subCity,
-      kebele,
-      image,
-      bankAccount,
-      status,
-      salary,
-    ],
-    (err, res) => {
-      if (err) {
-        return result(err, null);
-      }
-
-      result(null, { id: res.insertId, ...employee });
-    }
+      gender: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      phoneNumber: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        min: 12,
+        max: 12,
+      },
+      email: {
+        type: DataTypes.STRING,
+        isEmail: true,
+      },
+      country: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      city: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      subCity: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      kebele: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      // image: {
+      //   type: DataTypes.STRING,
+      //   allowNull: false,
+      // },
+      salary: {
+        type: DataTypes.DOUBLE,
+        allowNull: false,
+      },
+      status: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: "active",
+      },
+    },
+    { timestamps: false }
   );
+  return Employee;
 };
-
-//update
-
-Employee.findByIdAndUpdate = (id, employee, result) => {
-  const {
-    departmentId,
-    titleId,
-    joinedDate,
-    qualification,
-    totalExperience,
-    firstName,
-    middleName,
-    lastName,
-    dob,
-    gender,
-    phoneNumber,
-    email,
-    country,
-    city,
-    subCity,
-    kebele,
-    image,
-    bankAccount,
-    salary,
-  } = employee;
-
-  mysql.query(
-    `CALL updateEmployee(${id} ,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?.?,? )`,
-    [
-      departmentId,
-      titleId,
-      joinedDate,
-      qualification,
-      totalExperience,
-      firstName,
-      middleName,
-      lastName,
-      dob,
-      gender,
-      phoneNumber,
-      email,
-      country,
-      city,
-      subCity,
-      kebele,
-      image,
-      bankAccount,
-      salary,
-    ],
-    (err, res) => {
-      if (err) return result(null, err);
-
-      if (res.length == 0) return result({ kind: "not_found" }, null);
-
-      result(null, { ...employee });
-    }
-  );
-};
-
-// delete
-
-Employee.findByIdAndDelete = (id, result) => {
-  let query = `CALL deleteEmployee(${id})`;
-
-  mysql.query(query, (err, res) => {
-    if (err) return result(null, err);
-
-    if (res.affectedRows == 0) return result({ kind: "not_found" }, null);
-
-    result(null, res);
-  });
-};
-
-module.exports = Employee;

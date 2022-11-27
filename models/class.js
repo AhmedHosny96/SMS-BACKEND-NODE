@@ -1,73 +1,34 @@
-const mysql = require("../config/db");
+"use strict";
+const { Section } = require("./section");
+module.exports = (sequelize, DataTypes) => {
+  const Class = sequelize.define(
+    "Class",
+    {
+      classId: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
+      },
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+      },
 
-const Class = function (classes) {
-  this.classId = classes.classId;
-  this.name = classes.name;
-  this.description = classes.description;
+      description: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+    },
+    { timestamps: false }
+  );
+
+  // Class.hasMany(Section, {
+  //   foreignKey: "classId",
+  // });
+
+  return Class;
 };
 
 //
-Class.findAll = (result) => {
-  let query = `CALL getClasses()`;
-
-  mysql.query(query, (err, res) => {
-    if (err) return result(null, err);
-
-    result(null, res[0]);
-  });
-};
-
-// by id
-Class.findById = (id, result) => {
-  let query = ` CALL getClassById(${id})`;
-
-  mysql.query(query, (err, res) => {
-    if (err) return result(null, err);
-
-    result(null, res[0]);
-  });
-};
-
-Class.create = (data, result) => {
-  const { name, description } = data;
-
-  mysql.query(`CALL createClass(? , ?)`, [name, description], (err, res) => {
-    if (err) return result(null, err);
-
-    result(null, { id: res.insertId, ...data });
-  });
-};
-
-//update
-
-Class.findByIdAndUpdate = (id, data, result) => {
-  const { name, description } = data;
-
-  // let query = ` , ${[id, name, description]}`;
-
-  mysql.query(
-    `CALL updateClass(${id} , ? , ? )`,
-    [name, description],
-    (err, res) => {
-      if (err) return result(null, err);
-
-      // if (res.length == 0) return result({ kind: "not_found" }, null);
-
-      result(null, { ...data });
-    }
-  );
-};
-
-// delete
-
-Class.findByIdAndDelete = (id, result) => {
-  mysql.query(`CALL deleteClass(${id})`, (err, res) => {
-    if (err) return result(null, err);
-
-    if (res.affectedRows == 0) return result({ kind: "not_found" }, null);
-
-    result(null, res);
-  });
-};
-
-module.exports = Class;

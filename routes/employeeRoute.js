@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const multer = require("multer");
 const path = require("path");
-const Employee = require("../models/employee");
+const employeeController = require("../controllers/employeeController");
 
 const uploadStorage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -21,119 +21,12 @@ const uploads = multer({
   },
 });
 
-// get all
-router.get("/", async (req, res) => {
-  if (!req.body) return res.status(400).send("Content cannot be empty");
-
-  Employee.findAll((err, data) => {
-    if (err) return res.status(500).send(err.messsage);
-
-    res.send(data);
-  });
-});
-
-// get by id
-
-router.get("/:id", async (req, res) => {
-  const { id } = req.params;
-
-  Employee.findById(id, (err, data) => {
-    if (err) return res.status(500).send(err.message);
-
-    if (data.length === 0)
-      return res.status(400).send("employee not found with " + id);
-
-    res.send(data);
-  });
-});
-// create status
-router.post("/", uploads.single("image"), async (req, res) => {
-  const {
-    departmentId,
-    titleId,
-    joinedDate,
-    qualification,
-    totalExperience,
-    firstName,
-    middleName,
-    lastName,
-    dob,
-    gender,
-    phoneNumber,
-    email,
-    country,
-    city,
-    salary,
-    status,
-    subCity,
-    kebele,
-    image,
-    bankAccount,
-  } = req.body;
-  //   // validation
-  if (!req.body)
-    return res.status(400).send({ message: "Content can't be empty" });
-
-  //
-  const employee = new Employee({
-    departmentId,
-    titleId,
-    joinedDate,
-    qualification,
-    totalExperience,
-    firstName,
-    middleName,
-    lastName,
-    dob,
-    gender,
-    phoneNumber,
-    email,
-    country,
-    city,
-    subCity,
-    salary,
-    status,
-    kebele,
-    image: req.file.filename,
-    bankAccount,
-  });
-  Employee.create(employee, (err, data) => {
-    if (err) return res.status(500).send(err.message);
-    res.send(data);
-  });
-});
-
-//update
-
-router.put("/:id", async (req, res) => {
-  // validation
-
-  if (!req.body) return res.status(400).send("body cannot be empty");
-
-  const { id } = req.params;
-
-  Employee.findByIdAndUpdate(id, new Employee(req.body), (err, data) => {
-    if (err) {
-      err.kind === "not_found"
-        ? res.status(400).send({ message: "employee not found with id " + id })
-        : res.status(500).json(err.message);
-    }
-
-    res.send(data);
-  });
-});
-
-// delete
-router.delete("/:id", async (req, res) => {
-  Employee.findByIdAndDelete(req.params.id, (err, data) => {
-    if (err) {
-      err.kind === "not_found"
-        ? res.status(400).send("employee not found with id " + req.params.id)
-        : res.status(500).json(err.message);
-    }
-
-    res.send("deleted successfully");
-  });
-});
+router.get("/", employeeController.getEmployees);
+router.get("/:id", employeeController.getEmployees);
+router.post("/", employeeController.createEmployee);
+router.put("/:id", employeeController.updateEmployee);
+router.delete("/:id", employeeController.deleteEmployee);
 
 module.exports = router;
+
+//
