@@ -1,9 +1,11 @@
 const model = require("../models/modelConfig");
 
 const AcademicYear = model.academicYear;
+const School = model.school;
 
 const createAcademicYear = async (req, res) => {
-  const { name, startDate, endDate, ethiopianYear } = req.body;
+  const { name, enrollmentType, startDate, endDate, ethiopianYear, schoolId } =
+    req.body;
 
   let subject = await AcademicYear.findOne({
     where: {
@@ -11,14 +13,15 @@ const createAcademicYear = async (req, res) => {
     },
   });
 
-  if (subject)
-    return res.status(400).send("AcademicYear with the same name exists");
+  if (subject) return res.status(400).send("session with the same name exists");
 
   let payload = {
     name,
+    enrollmentType,
     startDate,
     endDate,
     ethiopianYear,
+    schoolId,
   };
   await AcademicYear.create(payload);
   res.send(payload);
@@ -29,15 +32,28 @@ const getAcademicYears = async (req, res) => {
   res.send(academicYear);
 };
 
+const getAcademicYearBySchool = async (req, res) => {
+  let schoolId = req.params.schoolId;
+  const academicYear = await AcademicYear.findAll({
+    where: { schoolId: schoolId },
+
+    include: [School],
+    raw: true,
+  });
+  res.send(academicYear);
+};
+
 const getAcademicYearById = async (req, res) => {
   let id = req.params.id;
 
   const academicYear = await AcademicYear.findOne({
-    where: { academicYearId: id },
+    where: { id: id },
   });
 
-  if (academicYear === null)
-    return res.status(404).send(`AcademicYear with id ${id} not found`);
+  if (!academicYear)
+    return res
+      .status(404)
+      .send({ status: 404, message: `session with id ${id} not found` });
 
   res.send(academicYear);
 };
@@ -50,7 +66,7 @@ const updateAcademicYear = async (req, res) => {
   });
 
   if (academicYear === null)
-    return res.status(404).send(`AcademicYear with id ${id} not found`);
+    return res.status(404).send(`session with id ${id} not found`);
 
   res.status(200).send(academicYear);
 };
@@ -63,9 +79,9 @@ const deleteAcademicYear = async (req, res) => {
   });
 
   if (academicYear === null)
-    return res.status(404).send(`AcademicYear with id ${id} not found`);
+    return res.status(404).send(`session with id ${id} not found`);
 
-  res.send("deleted AcademicYear");
+  res.send("deleted session");
 };
 
 module.exports = {
@@ -74,4 +90,5 @@ module.exports = {
   getAcademicYearById,
   updateAcademicYear,
   deleteAcademicYear,
+  getAcademicYearBySchool,
 };

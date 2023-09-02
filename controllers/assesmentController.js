@@ -6,7 +6,7 @@ const Section = model.sections;
 const Subject = model.subjects;
 
 const createAssesment = async (req, res) => {
-  const { name, maxMarks, classId, sectionId, subjectId } = req.body;
+  const { name, maxMarks, classId } = req.body;
 
   let assesment = await Assesment.findOne({
     where: {
@@ -20,15 +20,18 @@ const createAssesment = async (req, res) => {
     name,
     classId,
     maxMarks,
-    sectionId,
-    subjectId,
+    id,
+    id,
   };
   await Assesment.create(payload);
   res.send(payload);
 };
 
 const getAssesments = async (req, res) => {
-  const asset = await Assesment.findAll({ include: [Class, Section, Subject] });
+  const asset = await Assesment.findAll({
+    include: [Class, Section, Subject],
+    raw: true,
+  });
   res.send(asset);
 };
 

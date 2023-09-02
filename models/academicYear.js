@@ -2,7 +2,7 @@ module.exports = (sequelize, DataTypes) => {
   const AcademicYear = sequelize.define(
     "academicYear",
     {
-      academicYearId: {
+      id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
@@ -11,6 +11,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
+      },
+      enrollmentType: {
+        type: DataTypes.STRING,
+        allowNull: false,
       },
       startDate: {
         type: DataTypes.DATE,

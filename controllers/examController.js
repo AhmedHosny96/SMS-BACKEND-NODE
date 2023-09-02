@@ -16,8 +16,6 @@ const createExam = async (req, res) => {
     academicYearId,
     termId,
     classId,
-    sectionId,
-    subjectId,
     date,
     startTime,
     endTime,
@@ -39,8 +37,6 @@ const createExam = async (req, res) => {
     academicYearId,
     termId,
     classId,
-    sectionId,
-    subjectId,
     date,
     startTime,
     endTime,
@@ -52,6 +48,7 @@ const createExam = async (req, res) => {
 const getExams = async (req, res) => {
   const exam = await Exam.findAll({
     include: [AcademicYear, Term, Class, Section, Subject],
+    raw: true,
   });
   res.send(exam);
 };

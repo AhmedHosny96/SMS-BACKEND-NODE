@@ -22,7 +22,8 @@ const uploads = multer({
 });
 
 router.get("/", employeeController.getEmployees);
-router.get("/:id", employeeController.getEmployees);
+router.get("/:schoolId", employeeController.getEmployeesBySchool);
+router.get("/id/:id", employeeController.getEmployeeById);
 router.post("/", employeeController.createEmployee);
 router.put("/:id", employeeController.updateEmployee);
 router.delete("/:id", employeeController.deleteEmployee);

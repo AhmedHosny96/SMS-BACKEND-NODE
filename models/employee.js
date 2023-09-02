@@ -2,13 +2,20 @@ module.exports = (sequelize, DataTypes) => {
   const Employee = sequelize.define(
     "employees",
     {
-      employeeId: {
+      id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
         allowNull: false,
       },
-
+      employeeNumber: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      qualification: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
       joinedDate: {
         type: DataTypes.DATE,
         allowNull: false,
@@ -17,31 +24,13 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      totalExperience: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
-      firstName: {
+      fullName: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      middleName: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      lastName: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-
-      dob: {
-        type: DataTypes.DATE,
-        allowNull: false,
-      },
-
       gender: {
-        type: DataTypes.STRING,
-        allowNull: false,
+        type: DataTypes.ENUM("male", "female"), // Use ENUM to limit possible values
+        allowNull: false, // Set to false if gender is mandatory
       },
       phoneNumber: {
         type: DataTypes.STRING,
@@ -78,12 +67,16 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       status: {
-        type: DataTypes.STRING,
+        type: DataTypes.BOOLEAN,
         allowNull: false,
-        defaultValue: "active",
+        defaultValue: true,
       },
     },
-    { timestamps: false }
+    {
+      timestamps: false, // Enable timestamps
+      createdAt: "createdAt", // Use 'created_at' as the field name for createdAt
+      updatedAt: "updatedAt", // Use 'updated_at' as the field name for updatedAt
+    }
   );
   return Employee;
 };

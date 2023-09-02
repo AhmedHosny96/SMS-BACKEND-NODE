@@ -6,17 +6,8 @@ const Section = model.sections;
 const Subject = model.subjects;
 
 const createAssigment = async (req, res) => {
-  const {
-    title,
-    type,
-    description,
-    attachment,
-    date,
-    dueDate,
-    classId,
-    sectionId,
-    subjectId,
-  } = req.body;
+  const { title, type, description, attachment, date, dueDate, classId } =
+    req.body;
 
   let assignment = await Assignment.findOne({
     where: {
@@ -35,8 +26,6 @@ const createAssigment = async (req, res) => {
     date,
     dueDate,
     classId,
-    sectionId,
-    subjectId,
   };
   await Assignment.create(payload);
   res.send(payload);
@@ -45,6 +34,7 @@ const createAssigment = async (req, res) => {
 const getAssignments = async (req, res) => {
   const assignment = await Assignment.findAll({
     include: [Class, Section, Subject],
+    raw: true,
   });
   res.send(assignment);
 };

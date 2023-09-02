@@ -3,7 +3,7 @@ module.exports = (sequelize, DataTypes) => {
   const Destination = sequelize.define(
     "destinations",
     {
-      destinationId: {
+      id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
@@ -21,6 +21,11 @@ module.exports = (sequelize, DataTypes) => {
       stopPoint: {
         type: DataTypes.STRING,
         allowNull: false,
+      },
+      status: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: "Active",
       },
     },
     { timestamps: false }

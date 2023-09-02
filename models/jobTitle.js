@@ -2,7 +2,7 @@ module.exports = (sequelize, DataTypes) => {
   const Jobtitle = sequelize.define(
     "jobtitles",
     {
-      titleId: {
+      id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
@@ -12,6 +12,11 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
+      },
+      description: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: false,
       },
     },
     { timestamps: false }

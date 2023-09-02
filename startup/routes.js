@@ -17,7 +17,7 @@ const termRoute = require("../routes/termRoute");
 const roleRoute = require("../routes/roleRoute");
 const authRoute = require("../routes/authRoute");
 const userRoute = require("../routes/userRoute");
-// const parentRoute = require("../routes/parentRoute");
+const parentRoute = require("../routes/parentRoute");
 // const teacherRoute = require("../routes/teacherRoute");
 // const institutionRoute = require("../routes/institutionRoute");
 const driverRoute = require("../routes/driverRoute");
@@ -33,10 +33,25 @@ const assignmentRoute = require("../routes/assignmentRoute");
 const studentAttendanceRoute = require("../routes/studentAttendanceRoute");
 const newsFeedRoute = require("../routes/newsFeedRoute");
 const studentRoute = require("../routes/studentRoute");
+const smsRoute = require("../routes/smsRoute");
+
+const studentFee = require("../routes/studentFeeRoute");
+
+const markSheet = require("../routes/markSheetRoute");
 // const eventRoute = require("../routes/eventRoute");
 
 // const studentDocumentRoute = require("../routes/studentDocumentRoute");
 const visitorRoute = require("../routes/visitorRoute");
+const timetableRoute = require("../routes/timetableRoute");
+const permissionRoute = require("../routes/permissionRoute");
+const expenseRoute = require("../routes/expenseRoute");
+const schoolRoute = require("../routes/schoolRoute");
+const schoolBranchRoute = require("../routes/schoolbranchRoute");
+const classRoomRoute = require("../routes/classRoomRoute");
+const eventRoute = require("../routes/eventRoute");
+const taskRoute = require("../routes/taskRoute");
+const messageRoutes = require("../routes/messageRoutes");
+const dispatchRoute = require("../routes/dispatchRoute");
 
 module.exports = (app) => {
   app.use(express.json());
@@ -45,7 +60,7 @@ module.exports = (app) => {
   app.use("/api/classes", classRoute);
   app.use("/api/sections", sectionRoute);
   app.use("/api/sections", sectionRoute);
-  app.use("/api/academicYear", academicYearRoute);
+  app.use("/api/academic-year", academicYearRoute);
   app.use("/api/assets", assetRoute);
   app.use("/api/departments", departmentRoute);
   app.use("/api/job-titles", jobTitleRoute);
@@ -55,11 +70,13 @@ module.exports = (app) => {
   app.use("/api/leave-requests", leaveRequestRoute);
   app.use("/api/exams", examRoute);
 
+  app.use("/api/student-fee", studentFee);
+
   app.use("/api/roles", roleRoute);
   app.use("/api", authRoute);
   app.use("/api/users", userRoute);
 
-  // app.use("/api/parents", parentRoute);
+  app.use("/api/parents", parentRoute);
   // app.use("/api/teachers", teacherRoute);
   // app.use("/api/institution", institutionRoute);
   app.use("/api/drivers", driverRoute);
@@ -76,9 +93,26 @@ module.exports = (app) => {
   app.use("/api/student-attendance", studentAttendanceRoute);
   app.use("/api/newsfeed", newsFeedRoute);
   app.use("/api/students", studentRoute);
+  app.use("/api/student-marks", markSheet);
+  app.use("/api/timetable", timetableRoute);
   // app.use("/api/studentDocuments", studentDocumentRoute);
   // app.use("/api/events", eventRoute);
   app.use("/api/visitors", visitorRoute);
+
+  app.use("/api/send-sms", smsRoute);
+  app.use("/api/permissions", permissionRoute);
+
+  app.use("/api/change-password", userRoute);
+
+  app.use("/api/expenses", expenseRoute);
+
+  app.use("/api/school-profile", schoolRoute);
+  app.use("/api/school-branches", schoolBranchRoute);
+  app.use("/api/class-rooms", classRoomRoute);
+  app.use("/api/events", eventRoute);
+  app.use("/api/tasks", taskRoute);
+  app.use("/api/messages", messageRoutes);
+  app.use("/api/dispatches", dispatchRoute);
 
   app.use(error);
 };

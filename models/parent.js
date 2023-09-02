@@ -1,18 +1,46 @@
-const mysql = require("../config/db");
+"use strict";
+module.exports = (sequelize, DataTypes) => {
+  const Parent = sequelize.define(
+    "parents",
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
+      },
+      fullName: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+      },
+      phoneNumber: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+      },
+      email: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      relationshipType: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      occupation: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      status: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true,
+      },
+    },
+    { timestamps: false }
+  );
 
-// constructor
-
-const Parent = function (parent) {
-  this.parentId = parent.parentId;
-  this.fullName = parent.fullName;
-  this.phoneNumber = parent.phoneNumber;
-  this.email = parent.email;
-  this.type = parent.type;
-  this.occupation = parent.occupation;
-  this.studentId = parent.studentId;
-  this.status = parent.status || "Active";
+  return Parent;
 };
 
-// create
-
-module.exports = Parent;
+//

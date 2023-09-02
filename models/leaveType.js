@@ -2,7 +2,7 @@ module.exports = (sequelize, DataTypes) => {
   const LeaveType = sequelize.define(
     "leaveTypes",
     {
-      leaveTypeId: {
+      id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
@@ -17,8 +17,16 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
+      description: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
     },
-    { timestamps: false }
+    {
+      timestamps: true, // Enable timestamps
+      createdAt: "createdAt", // Use 'created_at' as the field name for createdAt
+      updatedAt: "updatedAt", // Use 'updated_at' as the field name for updatedAt
+    }
   );
 
   return LeaveType;

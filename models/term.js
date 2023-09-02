@@ -2,7 +2,7 @@ module.exports = (sequelize, DataTypes) => {
   const Term = sequelize.define(
     "term",
     {
-      termId: {
+      id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
@@ -15,9 +15,6 @@ module.exports = (sequelize, DataTypes) => {
       startDate: {
         type: DataTypes.DATE,
         allowNull: false,
-        validate: {
-          isDate: true,
-        },
       },
       endDate: {
         type: DataTypes.DATE,
@@ -27,9 +24,6 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DATE,
         allowNull: false,
         unique: true,
-        validate: {
-          isDate: true,
-        },
       },
       status: {
         type: DataTypes.STRING,

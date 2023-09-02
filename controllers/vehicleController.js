@@ -1,6 +1,7 @@
 const model = require("../models/modelConfig");
 
 const Vehicle = model.vehicles;
+const School = model.school;
 
 const createAsset = async (req, res) => {
   const {
@@ -10,15 +11,20 @@ const createAsset = async (req, res) => {
     plateNumber,
     noOfSeats,
     rentedAmount,
+    schoolId,
   } = req.body;
 
   let vehicle = await Vehicle.findOne({
     where: {
-      ownerPhoneNumber: ownerPhoneNumber,
+      plateNumber: plateNumber,
     },
   });
 
-  if (vehicle) return res.status(400).send("asset with the same name exists");
+  if (vehicle)
+    return res.status(400).send({
+      status: 400,
+      message: "vehicle with the same plate number exists",
+    });
 
   let payload = {
     type,
@@ -27,6 +33,7 @@ const createAsset = async (req, res) => {
     plateNumber,
     noOfSeats,
     rentedAmount,
+    schoolId,
   };
   await Vehicle.create(payload);
   res.send(payload);
@@ -41,12 +48,25 @@ const getVehicleById = async (req, res) => {
   let id = req.params.id;
 
   const vehicle = await Vehicle.findOne({
-    where: { vehicleId: id },
+    where: { id: id },
   });
 
-  if (vehicle === null)
-    return res.status(404).send(`vehicle with id ${id} not found`);
+  if (!vehicle)
+    return res
+      .status(404)
+      .send({ status: 404, message: `vehicle with id ${id} not found` });
 
+  res.send(vehicle);
+};
+
+const getVehicleBySchool = async (req, res) => {
+  let schoolId = req.params.schoolId;
+
+  const vehicle = await Vehicle.findAll({
+    where: { schoolId: schoolId },
+    include: [School],
+    raw: true,
+  });
   res.send(vehicle);
 };
 
@@ -57,8 +77,11 @@ const updateVehicle = async (req, res) => {
     where: { vehicleId: id },
   });
 
-  if (vehicle === null)
-    return res.status(404).send(`vehicleId with id ${id} not found`);
+  if (!vehicle)
+    return res.status(404).send({
+      status: 404,
+      message: { status: 404, message: `vehicle with id ${id} not found` },
+    });
 
   res.status(200).send(vehicle);
 };
@@ -70,8 +93,10 @@ const deleteVehicle = async (req, res) => {
     where: { vehicleId: id },
   });
 
-  if (vehicle === null)
-    return res.status(404).send(`vehicle with id ${id} not found`);
+  if (!vehicle)
+    return res
+      .status(404)
+      .send({ status: 404, message: `vehicle with id ${id} not found` });
 
   res.send("deleted vehicle");
 };
@@ -82,4 +107,5 @@ module.exports = {
   getVehicleById,
   updateVehicle,
   deleteVehicle,
+  getVehicleBySchool,
 };

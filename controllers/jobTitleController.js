@@ -3,7 +3,7 @@ const model = require("../models/modelConfig");
 const Title = model.jobtitles;
 
 const createTitle = async (req, res) => {
-  const { title } = req.body;
+  const { title, description } = req.body;
 
   let titles = await Title.findOne({
     where: {
@@ -15,6 +15,7 @@ const createTitle = async (req, res) => {
 
   let payload = {
     title,
+    description,
   };
 
   await Title.create(payload);

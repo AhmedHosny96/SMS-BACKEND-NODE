@@ -3,7 +3,7 @@ module.exports = (sequelize, DataTypes) => {
   const Driver = sequelize.define(
     "drivers",
     {
-      driverId: {
+      id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
@@ -22,17 +22,17 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      dob: {
-        type: DataTypes.DATE,
-        allowNull: false,
-      },
       status: {
-        type: DataTypes.STRING,
+        type: DataTypes.BOOLEAN,
         allowNull: false,
-        defaultValue: "active",
+        defaultValue: true,
       },
     },
-    { timestamps: false }
+    {
+      timestamps: true, // Enable timestamps
+      createdAt: "createdAt", // Use 'created_at' as the field name for createdAt
+      updatedAt: "updatedAt", // Use 'updated_at' as the field name for updatedAt
+    }
   );
 
   return Driver;

@@ -4,7 +4,8 @@ const Term = model.terms;
 const AcademicYear = model.academicYear;
 
 const createTerm = async (req, res) => {
-  const { name, academicYearId, startDate, endDate, ethiopianDate } = req.body;
+  const { name, academicYearId, startDate, endDate, schoolId, ethiopianDate } =
+    req.body;
 
   let subject = await Term.findOne({
     where: {
@@ -12,14 +13,14 @@ const createTerm = async (req, res) => {
     },
   });
 
-  if (subject)
-    return res.status(400).send("AcademicYear with the same name exists");
+  if (subject) return res.status(400).send("term with the same name exists");
 
   let payload = {
     name,
     academicYearId,
     startDate,
     endDate,
+    schoolId,
     ethiopianDate,
   };
   await Term.create(payload);
@@ -27,8 +28,9 @@ const createTerm = async (req, res) => {
 };
 
 const getTerms = async (req, res) => {
-  const academicYear = await Term.findAll({ include: AcademicYear });
-  res.send(academicYear);
+  const academicYear = await Term.findAll({ include: AcademicYear, raw: true });
+
+  res.json(academicYear);
 };
 
 const getTermById = async (req, res) => {
@@ -39,7 +41,7 @@ const getTermById = async (req, res) => {
   });
 
   if (academicYear === null)
-    return res.status(404).send(`AcademicYear with id ${id} not found`);
+    return res.status(404).send(`term with id ${id} not found`);
 
   res.send(academicYear);
 };
@@ -52,7 +54,7 @@ const updateTerm = async (req, res) => {
   });
 
   if (academicYear === null)
-    return res.status(404).send(`AcademicYear with id ${id} not found`);
+    return res.status(404).send(`term with id ${id} not found`);
 
   res.status(200).send(academicYear);
 };
@@ -65,9 +67,9 @@ const deleteTerm = async (req, res) => {
   });
 
   if (academicYear === null)
-    return res.status(404).send(`AcademicYear with id ${id} not found`);
+    return res.status(404).send(`term with id ${id} not found`);
 
-  res.send("deleted AcademicYear");
+  res.send("deleted term");
 };
 
 module.exports = {

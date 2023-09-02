@@ -2,14 +2,14 @@ module.exports = (sequelize, DataTypes) => {
   const Student = sequelize.define(
     "students",
     {
-      studentId: {
+      id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
         allowNull: false,
       },
 
-      uniqueId: {
+      admissionNumber: {
         type: DataTypes.STRING,
         allowNull: false,
       },

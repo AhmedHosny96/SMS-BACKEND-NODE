@@ -1,14 +1,3 @@
-const mysql = require("../config/db");
-
-// constructor
-
-const NewsFeed = function (feed) {
-  this.title = feed.title;
-  this.description = feed.description;
-  this.attachment = feed.attachment;
-  this.date = feed.date;
-};
-
 module.exports = NewsFeed;
 
 ("use strict");
@@ -16,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
   const Newsfeed = sequelize.define(
     "newsfeed",
     {
-      newsfeedId: {
+      id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,

@@ -3,7 +3,7 @@ module.exports = (sequelize, DataTypes) => {
   const Visitor = sequelize.define(
     "visitors",
     {
-      visitorId: {
+      id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,

@@ -1,9 +1,10 @@
 const model = require("../models/modelConfig");
 
 const Department = model.departments;
+const School = model.school;
 
 const createDepartment = async (req, res) => {
-  const { name } = req.body;
+  const { name, description, schoolId } = req.body;
 
   let department = await Department.findOne({
     where: {
@@ -16,6 +17,8 @@ const createDepartment = async (req, res) => {
 
   let payload = {
     name,
+    description,
+    schoolId,
   };
 
   await Department.create(payload);
@@ -28,13 +31,26 @@ const getDepartments = async (req, res) => {
   res.send(department);
 };
 
+const getDepartmentsBySchool = async (req, res) => {
+  let schoolId = req.params.schoolId;
+
+  const department = await Department.findAll({
+    where: { schoolId: schoolId },
+    include: [School],
+    raw: true,
+  });
+  res.send(department);
+};
+
 const getDepartmentById = async (req, res) => {
   let id = req.params.id;
 
-  const department = await Department.findOne({ where: { departmentId: id } });
+  const department = await Department.findOne({ where: { id: id } });
 
   if (department === null)
-    return res.status(404).send(`Department with id ${id} not found`);
+    return res
+      .status(404)
+      .send({ status: 404, message: `Department with id ${id} not found` });
 
   res.send(department);
 };
@@ -47,9 +63,11 @@ const updateDepartment = async (req, res) => {
   });
 
   if (department === null)
-    return res.status(404).send(`Department with id ${id} not found`);
+    return res
+      .status(404)
+      .send({ status: 404, message: `Department with id ${id} not found` });
 
-  res.status(200).send(Department);
+  res.send(department);
 };
 
 const deleteDepartment = async (req, res) => {
@@ -57,8 +75,10 @@ const deleteDepartment = async (req, res) => {
 
   const department = await Department.destroy({ where: { departmentId: id } });
 
-  if (Department === null)
-    return res.status(404).send(`Department with id ${id} not found`);
+  if (department === null)
+    return res
+      .status(404)
+      .send({ status: 404, message: `Department with id ${id} not found` });
 
   res.send("deleted Department");
 };
@@ -69,4 +89,5 @@ module.exports = {
   getDepartmentById,
   updateDepartment,
   deleteDepartment,
+  getDepartmentsBySchool,
 };

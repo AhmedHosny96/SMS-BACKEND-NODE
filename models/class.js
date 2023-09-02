@@ -1,10 +1,8 @@
-"use strict";
-const { Section } = require("./section");
 module.exports = (sequelize, DataTypes) => {
   const Class = sequelize.define(
     "Class",
     {
-      classId: {
+      id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
@@ -21,12 +19,12 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
     },
-    { timestamps: false }
+    {
+      timestamps: true, // Enable timestamps
+      createdAt: "createdAt", // Use 'created_at' as the field name for createdAt
+      updatedAt: "updatedAt", // Use 'updated_at' as the field name for updatedAt
+    }
   );
-
-  // Class.hasMany(Section, {
-  //   foreignKey: "classId",
-  // });
 
   return Class;
 };

@@ -3,7 +3,7 @@ module.exports = (sequelize, DataTypes) => {
   const Asset = sequelize.define(
     "assets",
     {
-      assetId: {
+      id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
@@ -36,7 +36,11 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: "ok",
       },
     },
-    { timestamps: false }
+    {
+      timestamps: true, // Enable timestamps
+      createdAt: "createdAt",
+      updatedAt: "updatedAt",
+    }
   );
 
   return Asset;

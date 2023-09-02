@@ -1,20 +1,27 @@
-const e = require("cors");
+const bcrypt = require("bcrypt");
+const { Op } = require("sequelize");
 const model = require("../models/modelConfig");
+const generateUsername = require("../utils/CredentialGenerator");
+
+const { sendMessage } = require("../utils/twilioConfig");
+
+const emailSender = require("../utils/MailSender");
 
 const Employee = model.employees;
-const Titles = model.jobtitles;
 const Department = model.departments;
+
+const User = model.users;
+const School = model.school;
 
 const createEmployee = async (req, res) => {
   const {
     departmentId,
-    titleId,
+    roleId,
     joinedDate,
     qualification,
     totalExperience,
-    firstName,
-    middleName,
-    lastName,
+    fullName,
+    employeeNumber,
     dob,
     gender,
     phoneNumber,
@@ -25,26 +32,28 @@ const createEmployee = async (req, res) => {
     status,
     subCity,
     kebele,
+    schoolId,
   } = req.body;
 
-  let subject = await Employee.findOne({
+  let employee = await Employee.findOne({
     where: {
       phoneNumber: phoneNumber,
     },
   });
 
-  if (subject)
-    return res.status(400).send("Employee with the same name exists");
+  if (employee)
+    return res
+      .status(400)
+      .send({ status: 400, message: "Phone number is taken" });
 
   let payload = {
     departmentId,
-    titleId,
+    roleId,
     joinedDate,
     qualification,
     totalExperience,
-    firstName,
-    middleName,
-    lastName,
+    fullName,
+    employeeNumber,
     dob,
     gender,
     phoneNumber,
@@ -55,16 +64,75 @@ const createEmployee = async (req, res) => {
     status,
     subCity,
     kebele,
+    schoolId,
   };
 
   // image: req.file.originalName;
   await Employee.create(payload);
+
+  // create user object
+  const username = generateUsername();
+
+  function generateOTP() {
+    const length = 6;
+    const digits = "0123456789";
+    let OTP = "";
+
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * digits.length);
+      OTP += digits[randomIndex];
+    }
+
+    return OTP;
+  }
+
+  const otp = generateOTP();
+
+  console.log("OTP : {}", otp);
+
+  let user = await User.findOne({
+    where: { email: email },
+  });
+
+  if (user)
+    return res
+      .status(400)
+      .send({ status: 400, message: "Username or email is taken" });
+
+  let userPayload = {
+    username,
+    email,
+    password: await bcrypt.hash(otp, 10),
+    roleId,
+  };
+
+  await User.create(userPayload);
+
+  emailSender.sendEmail(email, fullName, otp);
+
+  sendMessage(
+    phoneNumber,
+    `Hi ${fullName} Here is your OTP : ${otp}
+    `
+  );
+
   res.send(payload);
 };
 
 const getEmployees = async (req, res) => {
   const employee = await Employee.findAll({
-    include: [Titles, Department],
+    include: [Department],
+    raw: true,
+  });
+  res.send(employee);
+};
+
+const getEmployeesBySchool = async (req, res) => {
+  let schoolId = req.params.schoolId;
+  const employee = await Employee.findAll({
+    where: { schoolId: schoolId },
+    include: [Department, School],
+    raw: true,
   });
   res.send(employee);
 };
@@ -73,11 +141,13 @@ const getEmployeeById = async (req, res) => {
   let id = req.params.id;
 
   const academicYear = await Employee.findOne({
-    where: { employeeId: id },
+    where: { id: id },
   });
 
   if (academicYear === null)
-    return res.status(404).send(`Employee with id ${id} not found`);
+    return res
+      .status(404)
+      .send({ status: 404, message: `Employee with id ${id} not found` });
 
   res.send(academicYear);
 };
@@ -90,7 +160,9 @@ const updateEmployee = async (req, res) => {
   });
 
   if (academicYear === null)
-    return res.status(404).send(`Employee with id ${id} not found`);
+    return res
+      .status(404)
+      .send({ status: 404, message: `Employee with id ${id} not found` });
 
   res.status(200).send(academicYear);
 };
@@ -103,7 +175,9 @@ const deleteEmployee = async (req, res) => {
   });
 
   if (academicYear === null)
-    return res.status(404).send(`Employee with id ${id} not found`);
+    return res
+      .status(404)
+      .send({ status: 404, message: `Employee with id ${id} not found` });
 
   res.send("deleted Employee");
 };
@@ -114,4 +188,5 @@ module.exports = {
   getEmployeeById,
   updateEmployee,
   deleteEmployee,
+  getEmployeesBySchool,
 };

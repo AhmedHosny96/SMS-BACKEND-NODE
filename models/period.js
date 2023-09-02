@@ -3,7 +3,7 @@ module.exports = (sequelize, DataTypes) => {
   const Period = sequelize.define(
     "period",
     {
-      periodId: {
+      id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,

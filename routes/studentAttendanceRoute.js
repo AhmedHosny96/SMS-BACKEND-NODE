@@ -3,7 +3,11 @@ const studentAttendanceController = require("../controllers/studentAttendanceCon
 const router = require("express").Router();
 
 router.get("/", studentAttendanceController.getStudentAttendance);
-router.get("/:id", studentAttendanceController.getStudentAttendanceById);
+router.get(
+  "/:schoolId",
+  studentAttendanceController.getStudentAttendanceBySchool
+);
+router.get("/id/:id", studentAttendanceController.getStudentAttendanceById);
 router.post("/", studentAttendanceController.createStudentAttendance);
 router.put("/:id", studentAttendanceController.updateStudentAttendance);
 router.delete("/:id", studentAttendanceController.deleteStudentAttendance);

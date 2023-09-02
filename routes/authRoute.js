@@ -6,6 +6,8 @@ const router = require("express").Router();
 // router.get("/:id", authController.getAssetById);
 router.post("/create-user", authController.createUser);
 router.post("/login", authController.login);
+
+router.put("/change-password/:id", authController.changePassword);
 // router.put("/:id", authController.updateAsset);
 // router.delete("/:id", authController.deleteAsset);
 

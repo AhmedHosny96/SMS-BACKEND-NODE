@@ -3,7 +3,7 @@ module.exports = (sequelize, DataTypes) => {
   const Assignment = sequelize.define(
     "assignments",
     {
-      assignmentId: {
+      id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,

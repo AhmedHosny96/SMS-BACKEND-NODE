@@ -2,7 +2,7 @@ module.exports = (sequelize, DataTypes) => {
   const Department = sequelize.define(
     "departments",
     {
-      departmentId: {
+      id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
@@ -13,8 +13,12 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         unique: true,
       },
+      description: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
     },
-    { timestamps: false }
+    { timestamps: true }
   );
 
   return Department;

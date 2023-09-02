@@ -4,14 +4,17 @@ const Student = model.students;
 const AcademicYear = model.academicYear;
 const Class = model.classes;
 const Section = model.sections;
+const Parent = model.parents;
+const School = model.school;
 
 const createStudent = async (req, res) => {
   const {
     academicYearId,
     classId,
     sectionId,
+    id,
     joinedDate,
-    uniqueId,
+    admissionNumber,
     rollNo,
     firstName,
     middleName,
@@ -26,6 +29,9 @@ const createStudent = async (req, res) => {
     previousSchoolName,
     previousSchoolAddress,
     previousQualification,
+    parentId,
+    destinationId,
+    schoolId,
   } = req.body;
 
   //   let student = await Student.findOne({
@@ -40,8 +46,9 @@ const createStudent = async (req, res) => {
     academicYearId,
     classId,
     sectionId,
+    id,
     joinedDate,
-    uniqueId,
+    admissionNumber,
     rollNo,
     firstName,
     middleName,
@@ -56,6 +63,9 @@ const createStudent = async (req, res) => {
     previousSchoolName,
     previousSchoolAddress,
     previousQualification,
+    parentId,
+    destinationId,
+    schoolId,
   };
 
   // image: req.file.originalName;
@@ -65,21 +75,63 @@ const createStudent = async (req, res) => {
 
 const getStudents = async (req, res) => {
   const employee = await Student.findAll({
-    include: [AcademicYear, Class, Section],
+    include: [AcademicYear, Class, Section, Parent],
+    raw: true,
   });
   // console.log(employee.department.name);
   res.send(employee);
 };
 
-const getStudnentById = async (req, res) => {
+const getStudentBySchool = async (req, res) => {
+  let schoolId = req.params.schoolId;
+
+  const student = await Student.findAll({
+    where: { schoolId: schoolId },
+    include: [AcademicYear, Class, Section, Parent, School],
+    raw: true,
+  });
+  // console.log(student.department.name);
+  res.send(student);
+};
+
+const getStudentById = async (req, res) => {
   let id = req.params.id;
 
   const student = await Student.findOne({
-    where: { employeeId: id },
+    where: { id: id },
+  });
+
+  if (!student) return res.status(404).send(`student with id ${id} not found`);
+
+  res.send(student);
+};
+
+const getStudentByDestinationId = async (req, res) => {
+  let destinationId = req.params.destinationId;
+
+  const student = await Student.findAll({
+    where: { destinationId: destinationId },
+    include: [AcademicYear, Class, Section, Parent],
+    raw: true,
   });
 
   if (student === null)
     return res.status(404).send(`student with id ${id} not found`);
+
+  res.send(student);
+};
+
+const getStudentBySection = async (req, res) => {
+  let sectionId = req.params.sectionId;
+
+  const student = await Student.findAll({
+    where: { sectionId: sectionId },
+  });
+
+  if (!student)
+    return res
+      .status(404)
+      .send({ status: 404, message: `no students in this section` });
 
   res.send(student);
 };
@@ -97,15 +149,17 @@ const updateStudent = async (req, res) => {
   res.status(200).send(student);
 };
 
-const deletStudent = async (req, res) => {
+const deleteStudent = async (req, res) => {
   let id = req.params.id;
 
   const student = await Student.destroy({
     where: { studentIdId: id },
   });
 
-  if (student === null)
-    return res.status(404).send(`student with id ${id} not found`);
+  if (!student)
+    return res
+      .status(404)
+      .send({ status: 404, message: `student with id ${id} not found` });
 
   res.send("deleted student");
 };
@@ -113,7 +167,10 @@ const deletStudent = async (req, res) => {
 module.exports = {
   createStudent,
   getStudents,
-  getStudnentById,
+  getStudentById,
   updateStudent,
-  deletStudent,
+  deleteStudent,
+  getStudentBySection,
+  getStudentByDestinationId,
+  getStudentBySchool,
 };

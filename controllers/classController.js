@@ -1,9 +1,10 @@
 const model = require("../models/modelConfig");
 
 const Class = model.classes;
+const School = model.school;
 
 const createClass = async (req, res) => {
-  const { name, description } = req.body;
+  const { name, description, schoolId } = req.body;
 
   let subject = await Class.findOne({
     where: {
@@ -16,6 +17,7 @@ const createClass = async (req, res) => {
   let payload = {
     name,
     description,
+    schoolId,
   };
 
   await Class.create(payload);
@@ -25,7 +27,17 @@ const createClass = async (req, res) => {
 
 const getClasses = async (req, res) => {
   const subjects = await Class.findAll({});
+  res.send(subjects);
+};
 
+const getClassesBySchool = async (req, res) => {
+  let schoolId = req.params.schoolId;
+
+  const subjects = await Class.findAll({
+    where: { schoolId: schoolId },
+    include: [School],
+    raw: true,
+  });
   res.send(subjects);
 };
 
@@ -34,8 +46,10 @@ const getClassById = async (req, res) => {
 
   const subject = await Class.findOne({ where: { id: id } });
 
-  if (subject === null)
-    return res.status(404).send(`class with id ${id} not found`);
+  if (!subject)
+    return res
+      .status(404)
+      .send({ status: 404, message: `class with id ${id} not found` });
 
   res.send(subject);
 };
@@ -68,4 +82,5 @@ module.exports = {
   getClassById,
   updateClass,
   deleteClass,
+  getClassesBySchool,
 };

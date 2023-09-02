@@ -3,7 +3,7 @@ const model = require("../models/modelConfig");
 const Period = model.periods;
 
 const createPeriod = async (req, res) => {
-  const { name, startTime, endTime } = req.body;
+  const { name, startTime, endTime, schoolId } = req.body;
 
   let period = await Period.findOne({
     where: {
@@ -17,6 +17,7 @@ const createPeriod = async (req, res) => {
     name,
     startTime,
     endTime,
+    schoolId,
   };
 
   await Period.create(payload);

@@ -1,13 +1,29 @@
-const mysql = require("../config/db");
+module.exports = (sequelize, DataTypes) => {
+  const Timetable = sequelize.define(
+    "Timetable",
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
+      },
 
-// constructor
+      day: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      time: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+    },
+    {
+      timestamps: true, // Enable timestamps
+      createdAt: "createdAt", // Use 'created_at' as the field name for createdAt
+      updatedAt: "updatedAt", // Use 'updated_at' as the field name for updatedAt
+    }
+  );
 
-const Timetable = function (timetable) {
-  this.day = timetable.day;
-  this.periodId = timetable.periodId;
-  this.classId = timetable.classId;
-  this.sectionId = timetable.sectionId;
-  this.subjectId = timetable.subjectId;
+  return Timetable;
 };
-
-module.exports = Timetable;

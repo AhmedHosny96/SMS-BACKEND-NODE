@@ -1,26 +1,9 @@
-// const mysql = require("../config/db");
-
-// // constructor
-
-// const Vehicle = function (vehicle) {
-//   this.vehicleId = vehicle.vehicleId;
-//   this.ownerName = vehicle.ownerName;
-//   this.ownerPhoneNumber = vehicle.ownerPhoneNumber;
-//   this.plateNumber = vehicle.plateNumber;
-//   this.noOfSeats = vehicle.noOfSeats;
-//   this.maximumStudents = vehicle.maximumStudents;
-//   this.rentedAmount = vehicle.rentedAmount;
-//   this.type = vehicle.type;
-// };
-
-// module.exports = Vehicle;
-
 "use strict";
 module.exports = (sequelize, DataTypes) => {
   const Vehicle = sequelize.define(
     "vehicles",
     {
-      vehicleId: {
+      id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
@@ -29,7 +12,6 @@ module.exports = (sequelize, DataTypes) => {
       type: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
       },
       ownerName: {
         type: DataTypes.STRING,
@@ -51,8 +33,17 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: true,
       },
+      status: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true,
+      },
     },
-    { timestamps: false }
+    {
+      timestamps: true, // Enable timestamps
+      createdAt: "createdAt", // Use 'created_at' as the field name for createdAt
+      updatedAt: "updatedAt", // Use 'updated_at' as the field name for updatedAt
+    }
   );
 
   return Vehicle;

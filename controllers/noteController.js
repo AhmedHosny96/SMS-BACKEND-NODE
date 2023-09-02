@@ -6,8 +6,7 @@ const Class = model.classes;
 const Section = model.sections;
 
 const createNote = async (req, res) => {
-  const { title, description, attachment, classId, sectionId, subjectId } =
-    req.body;
+  const { title, description, attachment, classId } = req.body;
 
   let note = await Note.findOne({
     where: {
@@ -22,8 +21,6 @@ const createNote = async (req, res) => {
     description,
     attachment,
     classId,
-    sectionId,
-    subjectId,
   };
 
   await Note.create(payload);
@@ -32,7 +29,10 @@ const createNote = async (req, res) => {
 };
 
 const getNotes = async (req, res) => {
-  const notes = await Note.findAll({ include: [Class, Section, Subject] });
+  const notes = await Note.findAll({
+    include: [Class, Section, Subject],
+    raw: true,
+  });
 
   res.send(notes);
 };

@@ -4,12 +4,13 @@ module.exports = (sequelize, DataTypes) => {
   const LeaveRequest = sequelize.define(
     "leaveRequests",
     {
-      leaveRequestId: {
+      id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
         allowNull: false,
       },
+
       fromDate: {
         type: DataTypes.DATE,
         allowNull: false,
@@ -29,7 +30,11 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: "pending",
       },
     },
-    { timestamps: false }
+    {
+      timestamps: true, // Enable timestamps
+      createdAt: "createdAt", // Use 'created_at' as the field name for createdAt
+      updatedAt: "updatedAt", // Use 'updated_at' as the field name for updatedAt
+    }
   );
 
   return LeaveRequest;

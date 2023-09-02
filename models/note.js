@@ -1,24 +1,9 @@
-// const mysql = require("../config/db");
-
-// // constructor
-
-// const Note = function (timetable) {
-//   this.title = timetable.title;
-//   this.description = timetable.description;
-//   this.attachment = timetable.attachment;
-//   this.classId = timetable.classId;
-//   this.sectionId = timetable.sectionId;
-//   this.subjectId = timetable.subjectId;
-// };
-
-// //
-// module.exports = Note;
 "use strict";
 module.exports = (sequelize, DataTypes) => {
   const Note = sequelize.define(
     "notes",
     {
-      noteId: {
+      id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,

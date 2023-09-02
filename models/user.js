@@ -12,20 +12,30 @@ module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define(
     "users",
     {
-      userId: {
+      id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
         allowNull: false,
+      },
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
       },
       email: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
       },
-      username: {
-        type: DataTypes.STRING,
+      isFirstLogin: {
+        type: DataTypes.BOOLEAN,
         allowNull: false,
+        defaultValue: 1,
+      },
+      phoneNumber: {
+        type: DataTypes.STRING,
+        // allowNull: false,
         unique: true,
       },
       password: {
@@ -33,12 +43,27 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       status: {
-        type: DataTypes.STRING,
+        type: DataTypes.BOOLEAN,
         allowNull: false,
-        defaultValue: "active",
+        defaultValue: 0,
+      },
+
+      createdAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW,
+      },
+      updatedAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW,
       },
     },
-    { timestamps: false }
+    {
+      timestamps: true, // Enable timestamps
+      createdAt: "createdAt", // Use 'created_at' as the field name for createdAt
+      updatedAt: "updatedAt", // Use 'updated_at' as the field name for updatedAt
+    }
   );
   return User;
 };
