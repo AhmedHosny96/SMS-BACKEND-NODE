@@ -1,4 +1,5 @@
 const model = require("../models/modelConfig");
+const { Op } = require("sequelize");
 
 const Vehicle = model.vehicles;
 const School = model.school;
@@ -14,9 +15,16 @@ const createAsset = async (req, res) => {
     schoolId,
   } = req.body;
 
-  let vehicle = await Vehicle.findOne({
+  const vehicle = await Vehicle.findOne({
     where: {
-      plateNumber: plateNumber,
+      [Op.and]: [
+        {
+          plateNumber: plateNumber, // Check for the same name
+        },
+        {
+          schoolId: schoolId, // Check for the same schoolId
+        },
+      ],
     },
   });
 

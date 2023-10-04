@@ -1,16 +1,26 @@
 const model = require("../models/modelConfig");
 
+const { Op } = require("sequelize");
+
 const Role = model.roles;
 const Permission = model.permissions;
 const RolePermission = model.rolepermissions;
 const School = model.school;
 
 const createRole = async (req, res) => {
+  
   const { role, description, schoolId, permissionIds } = req.body;
 
-  let roles = await Role.findOne({
+  const roles = await Role.findOne({
     where: {
-      role: role,
+      [Op.and]: [
+        {
+          role: role, // Check for the same name
+        },
+        {
+          schoolId: schoolId, // Check for the same schoolId
+        },
+      ],
     },
   });
 

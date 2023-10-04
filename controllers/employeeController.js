@@ -9,9 +9,12 @@ const emailSender = require("../utils/MailSender");
 
 const Employee = model.employees;
 const Department = model.departments;
+const Role = model.roles;
 
 const User = model.users;
 const School = model.school;
+
+const Teacher = model.teacher;
 
 const createEmployee = async (req, res) => {
   const {
@@ -33,11 +36,21 @@ const createEmployee = async (req, res) => {
     subCity,
     kebele,
     schoolId,
+    classId,
+    sectionId,
+    subjectId,
   } = req.body;
 
-  let employee = await Employee.findOne({
+  const employee = await Employee.findOne({
     where: {
-      phoneNumber: phoneNumber,
+      [Op.and]: [
+        {
+          phoneNumber: phoneNumber, // Check for the same name
+        },
+        {
+          schoolId: schoolId, // Check for the same schoolId
+        },
+      ],
     },
   });
 
@@ -100,10 +113,12 @@ const createEmployee = async (req, res) => {
       .send({ status: 400, message: "Username or email is taken" });
 
   let userPayload = {
-    username,
+    name: fullName,
     email,
+    phoneNumber,
     password: await bcrypt.hash(otp, 10),
     roleId,
+    schoolId,
   };
 
   await User.create(userPayload);
@@ -116,12 +131,14 @@ const createEmployee = async (req, res) => {
     `
   );
 
+  // insert the teacher record
+
   res.send(payload);
 };
 
 const getEmployees = async (req, res) => {
   const employee = await Employee.findAll({
-    include: [Department],
+    include: [Department, Role],
     raw: true,
   });
   res.send(employee);
@@ -131,7 +148,7 @@ const getEmployeesBySchool = async (req, res) => {
   let schoolId = req.params.schoolId;
   const employee = await Employee.findAll({
     where: { schoolId: schoolId },
-    include: [Department, School],
+    include: [Department, School, Role],
     raw: true,
   });
   res.send(employee);

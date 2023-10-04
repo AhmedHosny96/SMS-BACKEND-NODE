@@ -1,4 +1,5 @@
 const model = require("../models/modelConfig");
+const { Op } = require("sequelize");
 
 const Permission = model.permissions;
 
@@ -7,9 +8,16 @@ const School = model.school;
 const createPermission = async (req, res) => {
   const { permission, category, schoolId } = req.body;
 
-  let permissions = await Permission.findOne({
+  const permissions = await Permission.findOne({
     where: {
-      permission: permission,
+      [Op.and]: [
+        {
+          permission: permission, // Check for the same name
+        },
+        {
+          schoolId: schoolId, // Check for the same schoolId
+        },
+      ],
     },
   });
 

@@ -1,4 +1,5 @@
-const fs = require("fs");
+const { Op } = require("sequelize");
+
 const model = require("../models/modelConfig");
 const School = model.school;
 const bcrypt = require("bcrypt");
@@ -23,19 +24,31 @@ const createSchool = async (req, res) => {
     logo,
   } = req.body;
 
-  let school = await School.findOne({
+  const existingSchool = await School.findOne({
     where: {
-      name: name,
-      // code: code,
+      [Op.or]: [
+        { contactEmail: contactEmail },
+        { name: name },
+        { phoneNumber: phoneNumber },
+      ],
     },
   });
 
   // const logoPath = req.file.path;
 
-  if (school)
-    return res
-      .status(400)
-      .send({ status: 400, message: `school with the same name exists` });
+  if (existingSchool) {
+    let errorMessage = "";
+
+    if (existingSchool.contactEmail === contactEmail) {
+      errorMessage = "A school with the same contact email already exists.";
+    } else if (existingSchool.name === name) {
+      errorMessage = `A school with the name "${name}" already exists.`;
+    } else if (existingSchool.phoneNumber === phoneNumber) {
+      errorMessage = "A school with the same phone number already exists.";
+    }
+
+    return res.status(400).json({ status: 400, message: errorMessage });
+  }
 
   let payload = {
     name,
@@ -49,8 +62,6 @@ const createSchool = async (req, res) => {
     // logo: logoPath,
     roleId,
   };
-
-  const createdSchool = await School.create(payload);
 
   // email credentials to schools , role : master admin
 
@@ -70,14 +81,32 @@ const createSchool = async (req, res) => {
 
   const otp = generateOTP();
 
-  let user = await User.findOne({
+  const existingUser = await User.findOne({
     where: {
-      email: contactEmail,
+      [Op.or]: [
+        { email: contactEmail },
+        { name: name },
+        { phoneNumber: phoneNumber },
+      ],
     },
   });
 
-  if (user)
-    return res.status(400).send({ status: 200, message: "Email is taken" });
+  if (existingUser) {
+    let errorMessage = "";
+
+    if (existingUser.email === contactEmail) {
+      errorMessage = "The provided email is already registered.";
+    } else if (existingUser.name === name) {
+      errorMessage = "The provided name is already in use.";
+    } else if (existingUser.phoneNumber === phoneNumber) {
+      errorMessage =
+        "The provided phone number is already associated with another account.";
+    }
+
+    return res.status(400).json({ status: 400, message: errorMessage });
+  }
+
+  const createdSchool = await School.create(payload);
 
   let userPayload = {
     name,

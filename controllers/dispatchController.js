@@ -27,6 +27,8 @@ const createDispatch = async (req, res) => {
       },
     });
 
+
+
     // Await the result of the getStudentByDestinationId function
 
     if (existingDispatch) {

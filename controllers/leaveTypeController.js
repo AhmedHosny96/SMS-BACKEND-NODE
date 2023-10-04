@@ -6,9 +6,16 @@ const School = model.school;
 const createLeaveType = async (req, res) => {
   const { type, allowedDays, description, schoolId } = req.body;
 
-  let leaveType = await LeaveType.findOne({
+  const leaveType = await LeaveType.findOne({
     where: {
-      type: type,
+      [Op.and]: [
+        {
+          type: type, // Check for the same name
+        },
+        {
+          schoolId: schoolId, // Check for the same schoolId
+        },
+      ],
     },
   });
 

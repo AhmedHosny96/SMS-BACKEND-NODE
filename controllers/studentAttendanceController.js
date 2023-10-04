@@ -43,8 +43,7 @@ const School = model.school;
 // };
 
 const createStudentAttendance = async (req, res) => {
-  const { attendanceDate, status, studentId, remark, schoolId, hasLeftHome } =
-    req.body;
+  const { attendanceDate, status, studentId, remark, schoolId } = req.body;
 
   try {
     const insertedRecords = [];
@@ -56,7 +55,7 @@ const createStudentAttendance = async (req, res) => {
         studentId: studentId[i],
         remark,
         schoolId,
-        hasLeftHome: hasLeftHome[i], // Use the corresponding value from the request
+        // hasLeftHome: hasLeftHome[i], // Use the corresponding value from the request
       };
 
       const insertedRecord = await StudentAttendance.create(payload);

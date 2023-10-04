@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
       itemName: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
+        // unique: true,
       },
       model: {
         type: DataTypes.STRING,

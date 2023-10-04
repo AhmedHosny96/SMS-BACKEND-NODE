@@ -8,13 +8,25 @@ const School = model.school;
 const createSection = async (req, res) => {
   const { name, classId, schoolId } = req.body;
 
-  // let section = await Section.findOne({
-  //   where: {
-  //     name: name,
-  //   },
-  // });
-
-  // if (section) return res.status(400).send("section with the same name exists");
+  const section = await Section.findOne({
+    where: {
+      [Op.and]: [
+        {
+          name: name, // Check for the same name
+        },
+        {
+          schoolId: schoolId, // Check for the same schoolId
+        },
+        {
+          classId: classId, // Check for the same schoolId
+        },
+      ],
+    },
+  });
+  if (section)
+    return res
+      .status(400)
+      .send({ status: 404, message: "section with the same name exists" });
 
   let payload = {
     name,
@@ -72,6 +84,25 @@ const getSectionByClassId = async (req, res) => {
   res.send(section);
 };
 
+const getSectionBySchoolAndClass = async (req, res) => {
+  const { schoolId, classId } = req.params;
+
+  const sections = await Section.findAll({
+    where: { schoolId: schoolId, classId: classId },
+    include: [Class], // If you want to include the associated Class model
+    raw: true,
+  });
+
+  if (!sections || sections.length === 0) {
+    return res.status(404).send({
+      status: 404,
+      message: `Sections not found in the selected class`,
+    });
+  }
+
+  res.send(sections);
+};
+
 const updateSection = async (req, res) => {
   let id = req.params.id;
 
@@ -102,4 +133,5 @@ module.exports = {
   updateSection,
   deleteSection,
   getSectionBySchool,
+  getSectionBySchoolAndClass,
 };

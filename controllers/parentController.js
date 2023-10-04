@@ -23,9 +23,16 @@ const createParent = async (req, res) => {
     schoolId,
   } = req.body;
 
-  let parent = await Parent.findOne({
+  const parent = await Parent.findOne({
     where: {
-      phoneNumber: phoneNumber,
+      [Op.and]: [
+        {
+          phoneNumber: phoneNumber, // Check for the same name
+        },
+        {
+          schoolId: schoolId, // Check for the same schoolId
+        },
+      ],
     },
   });
 

@@ -1,3 +1,5 @@
+const { Op } = require("sequelize");
+
 const model = require("../models/modelConfig");
 
 const Class = model.classes;
@@ -6,13 +8,23 @@ const School = model.school;
 const createClass = async (req, res) => {
   const { name, description, schoolId } = req.body;
 
-  let subject = await Class.findOne({
+  const existingClass = await Class.findOne({
     where: {
-      name: name,
+      [Op.and]: [
+        {
+          name: name, // Check for the same name
+        },
+        {
+          schoolId: schoolId, // Check for the same schoolId
+        },
+      ],
     },
   });
 
-  if (subject) return res.status(400).send("class with the same name exists");
+  if (existingClass)
+    return res
+      .status(400)
+      .send({ status: 400, message: "class with the same name exists" });
 
   let payload = {
     name,

@@ -9,12 +9,18 @@ const School = model.school;
 const createClassRoom = async (req, res) => {
   const { name, capacity, classId, sectionId, schoolId, status } = req.body;
 
-  let classRoom = await ClassRoom.findOne({
+  const classRoom = await ClassRoom.findOne({
     where: {
-      name: name,
+      [Op.and]: [
+        {
+          name: name, // Check for the same name
+        },
+        {
+          schoolId: schoolId, // Check for the same schoolId
+        },
+      ],
     },
   });
-
   if (classRoom)
     return res
       .status(400)

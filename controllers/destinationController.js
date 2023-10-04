@@ -2,6 +2,8 @@ const model = require("../models/modelConfig");
 const { getDriverByVehicleId } = require("./driverController");
 const { getVehicleById } = require("./vehicleController");
 
+const { Op } = require("sequelize");
+
 const School = model.school;
 
 const Destination = model.destinations;
@@ -9,9 +11,16 @@ const Destination = model.destinations;
 const createDestination = async (req, res) => {
   const { code, startPoint, stopPoint, schoolId } = req.body;
 
-  let destination = await Destination.findOne({
+  const destination = await Destination.findOne({
     where: {
-      code: code,
+      [Op.and]: [
+        {
+          code: code, // Check for the same name
+        },
+        {
+          schoolId: schoolId, // Check for the same schoolId
+        },
+      ],
     },
   });
 

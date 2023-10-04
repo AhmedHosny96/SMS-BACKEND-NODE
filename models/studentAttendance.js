@@ -18,11 +18,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: true,
     },
-    hasLeftHome: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false, // Default value indicating the student hasn't left home
-    },
+    // hasLeftHome: {
+    //   type: DataTypes.BOOLEAN,
+    //   allowNull: false,
+    //   defaultValue: false, // Default value indicating the student hasn't left home
+    // },
 
     createdAt: {
       type: DataTypes.DATE,

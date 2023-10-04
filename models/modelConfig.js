@@ -75,6 +75,8 @@ db.userConversation = require("./userConversation")(sequelize, DataTypes);
 
 db.dispatches = require("./dispatch")(sequelize, DataTypes);
 
+db.teacher = require("./teacherClassSectionSubject")(sequelize, DataTypes);
+
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
@@ -211,6 +213,11 @@ db.students.belongsTo(db.destinations, { foreignKey: "destinationId" });
 db.dispatches.belongsTo(db.destinations, { foreignKey: "destinationId" });
 db.dispatches.belongsTo(db.drivers, { foreignKey: "driverId" });
 
+db.teacher.belongsTo(db.classes, { foreignKey: "classId" });
+db.teacher.belongsTo(db.sections, { foreignKey: "sectionId" });
+db.teacher.belongsTo(db.subjects, { foreignKey: "subjectId" });
+db.teacher.belongsTo(db.employees, { foreignKey: "teacherId" });
+
 db.school.hasMany(db.users, {
   foreignKey: "schoolId",
   constraints: false,
@@ -232,6 +239,7 @@ db.destinations.belongsTo(db.school, { foreignKey: "schoolId" });
 db.leaveTypes.belongsTo(db.school, { foreignKey: "schoolId" });
 db.leaveRequests.belongsTo(db.school, { foreignKey: "schoolId" });
 db.academicYear.belongsTo(db.school, { foreignKey: "schoolId" });
+// db.academicYear.belongsTo(db.school, { foreignKey: "schoolId" });
 db.assets.belongsTo(db.school, { foreignKey: "schoolId" });
 db.events.belongsTo(db.school, { foreignKey: "schoolId" });
 db.students.belongsTo(db.school, { foreignKey: "schoolId" });

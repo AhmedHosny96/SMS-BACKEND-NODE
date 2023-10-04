@@ -1,3 +1,4 @@
+const { Op } = require("sequelize");
 const model = require("../models/modelConfig");
 
 const Department = model.departments;
@@ -6,12 +7,18 @@ const School = model.school;
 const createDepartment = async (req, res) => {
   const { name, description, schoolId } = req.body;
 
-  let department = await Department.findOne({
+  const department = await Department.findOne({
     where: {
-      name: name,
+      [Op.and]: [
+        {
+          name: name, // Check for the same name
+        },
+        {
+          schoolId: schoolId, // Check for the same schoolId
+        },
+      ],
     },
   });
-
   if (department)
     return res.status(400).send("Department with the same name exists");
 

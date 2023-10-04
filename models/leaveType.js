@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       type: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
+        // unique: true,
       },
       allowedDays: {
         type: DataTypes.INTEGER,

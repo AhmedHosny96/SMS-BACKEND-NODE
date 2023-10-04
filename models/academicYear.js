@@ -10,7 +10,6 @@ module.exports = (sequelize, DataTypes) => {
       name: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
       },
       enrollmentType: {
         type: DataTypes.STRING,
@@ -30,10 +29,10 @@ module.exports = (sequelize, DataTypes) => {
       ethiopianYear: {
         type: DataTypes.DATE,
         allowNull: false,
-        unique: true,
-        validate: {
-          isDate: true,
-        },
+        // unique: true,
+        // validate: {
+        //   isDate: true,
+        // },
       },
       status: {
         type: DataTypes.STRING,

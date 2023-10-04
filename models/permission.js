@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       permission: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
+        // unique: true,
       },
       category: {
         type: DataTypes.STRING,

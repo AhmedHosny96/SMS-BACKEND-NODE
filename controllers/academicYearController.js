@@ -1,3 +1,4 @@
+const { Op } = require("sequelize");
 const model = require("../models/modelConfig");
 
 const AcademicYear = model.academicYear;
@@ -7,13 +8,22 @@ const createAcademicYear = async (req, res) => {
   const { name, enrollmentType, startDate, endDate, ethiopianYear, schoolId } =
     req.body;
 
-  let subject = await AcademicYear.findOne({
+  const academicYear = await AcademicYear.findOne({
     where: {
-      name: name,
+      [Op.and]: [
+        {
+          name: name, // Check for the same name
+        },
+        {
+          schoolId: schoolId, // Check for the same schoolId
+        },
+      ],
     },
   });
-
-  if (subject) return res.status(400).send("session with the same name exists");
+  if (academicYear)
+    return res
+      .status(400)
+      .send({ status: 400, message: "session with the same name exists" });
 
   let payload = {
     name,

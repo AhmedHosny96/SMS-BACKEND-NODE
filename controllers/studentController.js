@@ -1,4 +1,5 @@
 const model = require("../models/modelConfig");
+const { Op } = require("sequelize");
 
 const Student = model.students;
 const AcademicYear = model.academicYear;
@@ -123,9 +124,10 @@ const getStudentByDestinationId = async (req, res) => {
 
 const getStudentBySection = async (req, res) => {
   let sectionId = req.params.sectionId;
+  let schoolId = req.params.schoolId;
 
   const student = await Student.findAll({
-    where: { sectionId: sectionId },
+    where: { [Op.and]: [{ schoolId: schoolId }, { sectionId: sectionId }] },
   });
 
   if (!student)

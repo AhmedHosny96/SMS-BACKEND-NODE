@@ -15,6 +15,7 @@ const createDriver = async (req, res) => {
         { phoneNumber: phoneNumber },
         { fullName: fullName },
         { licenceNumber: licenceNumber },
+        { schoolId: schoolId },
       ],
     },
   });

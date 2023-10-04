@@ -1,23 +1,11 @@
 module.exports = (sequelize, DataTypes) => {
-  const Classroom = sequelize.define(
-    "Classroom",
+  const Teacher = sequelize.define(
+    "teacher",
     {
       id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
-      },
-      name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        // unique: true,
-      },
-      capacity: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
-      status: {
-        type: DataTypes.STRING,
         allowNull: false,
       },
     },
@@ -27,5 +15,5 @@ module.exports = (sequelize, DataTypes) => {
       updatedAt: "updatedAt", // Use 'updated_at' as the field name for updatedAt
     }
   );
-  return Classroom;
+  return Teacher;
 };

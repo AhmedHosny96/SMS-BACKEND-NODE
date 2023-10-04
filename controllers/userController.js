@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const model = require("../models/modelConfig");
 const { sendMessage } = require("../utils/twilioConfig");
 const emailSender = require("../utils/MailSender");
+const { Op } = require("sequelize");
 
 const User = model.users;
 const Role = model.roles;
@@ -122,6 +123,8 @@ const resetPassword = async (req, res) => {
   user.isFirstLogin = true;
   user.status = false;
   user.password = await bcrypt.hash(otp, 10);
+
+  console.log("OTP : ", otp);
 
   await user.save();
 

@@ -7,13 +7,22 @@ const createAsset = async (req, res) => {
   const { itemName, model, quantity, remark, category, schoolId, status } =
     req.body;
 
-  let subject = await Asset.findOne({
+  const asset = await Asset.findOne({
     where: {
-      itemName: itemName,
+      [Op.and]: [
+        {
+          itemName: itemName, // Check for the same name
+        },
+        {
+          schoolId: schoolId, // Check for the same schoolId
+        },
+      ],
     },
   });
-
-  if (subject) return res.status(400).send("asset with the same name exists");
+  if (asset)
+    return res
+      .status(400)
+      .send({ status: 400, message: "asset with the same name exists" });
 
   let payload = {
     itemName,
