@@ -122,15 +122,15 @@ const getStudentByDestinationId = async (req, res) => {
   res.send(student);
 };
 
-const getStudentBySection = async (req, res) => {
-  let sectionId = req.params.sectionId;
-  let schoolId = req.params.schoolId;
+const getStudentByClassAndSection = async (req, res) => {
+  const { schoolId, classId, sectionId } = req.params;
 
   const student = await Student.findAll({
-    where: { [Op.and]: [{ schoolId: schoolId }, { sectionId: sectionId }] },
+    where: { schoolId, classId, sectionId },
+    include: [Class, Section],
   });
 
-  if (!student)
+  if (student.length === 0)
     return res
       .status(404)
       .send({ status: 404, message: `no students in this section` });
@@ -172,7 +172,7 @@ module.exports = {
   getStudentById,
   updateStudent,
   deleteStudent,
-  getStudentBySection,
+  getStudentByClassAndSection,
   getStudentByDestinationId,
   getStudentBySchool,
 };

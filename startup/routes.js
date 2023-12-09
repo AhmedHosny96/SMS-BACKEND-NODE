@@ -12,7 +12,7 @@ const assesmentRoute = require("../routes/assesmentRoute");
 const leaveTypeRoute = require("../routes/leaveTypeRoute");
 const leaveRequestRoute = require("../routes/leaveRequestRoute");
 const examRoute = require("../routes/examRoute");
-const termRoute = require("../routes/termRoute");
+const semisterRoute = require("../routes/semisterRoute");
 
 const roleRoute = require("../routes/roleRoute");
 const authRoute = require("../routes/authRoute");
@@ -52,6 +52,7 @@ const eventRoute = require("../routes/eventRoute");
 const taskRoute = require("../routes/taskRoute");
 const messageRoutes = require("../routes/messageRoutes");
 const dispatchRoute = require("../routes/dispatchRoute");
+const gradeReportRoute = require("../routes/gradeReportRoute");
 
 module.exports = (app) => {
   app.use(express.json());
@@ -65,7 +66,7 @@ module.exports = (app) => {
   app.use("/api/departments", departmentRoute);
   app.use("/api/job-titles", jobTitleRoute);
   app.use("/api/employees", employeeRoute);
-  app.use("/api/assesments", assesmentRoute);
+  app.use("/api/assessments", assesmentRoute);
   app.use("/api/leave-types", leaveTypeRoute);
   app.use("/api/leave-requests", leaveRequestRoute);
   app.use("/api/exams", examRoute);
@@ -88,7 +89,7 @@ module.exports = (app) => {
   app.use("/api/notes", noteRoute);
   app.use("/api/assignments", assignmentRoute);
   // app.use("/api/tasks", taskRoute);
-  app.use("/api/terms", termRoute);
+  app.use("/api/semister", semisterRoute);
 
   app.use("/api/student-attendance", studentAttendanceRoute);
   app.use("/api/newsfeed", newsFeedRoute);
@@ -113,6 +114,7 @@ module.exports = (app) => {
   app.use("/api/tasks", taskRoute);
   app.use("/api/messages", messageRoutes);
   app.use("/api/dispatches", dispatchRoute);
+  app.use("/api/grade-report", gradeReportRoute);
 
   app.use(error);
 };

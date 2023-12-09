@@ -41,7 +41,7 @@ db.leaveTypes = require("./leaveType")(sequelize, DataTypes);
 db.assesments = require("./assesment")(sequelize, DataTypes);
 db.leaveTypes = require("./leaveType")(sequelize, DataTypes);
 db.leaveRequests = require("./leaveRequest")(sequelize, DataTypes);
-db.terms = require("./term")(sequelize, DataTypes);
+db.semister = require("./semister")(sequelize, DataTypes);
 db.exams = require("./exam")(sequelize, DataTypes);
 db.periods = require("./period")(sequelize, DataTypes);
 db.shifts = require("./shift")(sequelize, DataTypes);
@@ -57,7 +57,6 @@ db.assignments = require("./assignment")(sequelize, DataTypes);
 db.studentAttendance = require("./studentAttendance")(sequelize, DataTypes);
 db.studentFee = require("./studentFee")(sequelize, DataTypes);
 db.parents = require("./parent")(sequelize, DataTypes);
-db.studentMarks = require("./markSheet")(sequelize, DataTypes);
 db.timetable = require("./timetable")(sequelize, DataTypes);
 db.permissions = require("./permission")(sequelize, DataTypes);
 db.rolepermissions = require("./rolePermission")(sequelize, DataTypes);
@@ -76,6 +75,11 @@ db.userConversation = require("./userConversation")(sequelize, DataTypes);
 db.dispatches = require("./dispatch")(sequelize, DataTypes);
 
 db.teacher = require("./teacherClassSectionSubject")(sequelize, DataTypes);
+
+db.assesments = require("./assesment")(sequelize, DataTypes);
+db.assessmentMarks = require("./assessmentMarks")(sequelize, DataTypes);
+
+db.subjectScore = require("./subjectScore")(sequelize, DataTypes);
 
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
@@ -111,7 +115,8 @@ db.employees.belongsTo(db.departments, { foreignKey: "departmentId" });
 // db.leaveRequests.belongsTo(db.leaveTypes, { foreignKey: "id" });
 // db.leaveRequests.belongsTo(db.employees, { foreignKey: "id" });
 
-db.terms.belongsTo(db.academicYear, { foreignKey: "id" });
+db.semister.belongsTo(db.academicYear, { foreignKey: "academicYearId" });
+db.semister.belongsTo(db.school, { foreignKey: "schoolId" });
 
 // db.exams.belongsTo(db.academicYear, { foreignKey: "id" });
 // db.exams.belongsTo(db.terms, { foreignKey: "termId" });
@@ -148,10 +153,7 @@ db.parents.belongsTo(db.roles, { foreignKey: "roleId" });
 db.studentFee.belongsTo(db.students, { foreignKey: "studentId" });
 db.students.hasMany(db.studentFee, { foreignKey: "studentId" });
 
-db.studentMarks.belongsTo(db.students, { foreignKey: "studentId" });
-db.studentMarks.belongsTo(db.subjects, { foreignKey: "subjectId" });
-
-db.students.hasMany(db.studentMarks, { foreignKey: "studentId" });
+db.students.hasMany(db.assessmentMarks, { foreignKey: "studentId" });
 // db.subjects.hasMany(db.timetable, { foreignKey: "subjectId" });
 // db.classes.hasMany(db.timetable, { foreignKey: "classId" });
 // db.sections.hasMany(db.timetable, { foreignKey: "sectionId" });
@@ -244,13 +246,41 @@ db.assets.belongsTo(db.school, { foreignKey: "schoolId" });
 db.events.belongsTo(db.school, { foreignKey: "schoolId" });
 db.students.belongsTo(db.school, { foreignKey: "schoolId" });
 db.studentFee.belongsTo(db.school, { foreignKey: "schoolId" });
-db.studentMarks.belongsTo(db.school, { foreignKey: "schoolId" });
+db.assessmentMarks.belongsTo(db.school, { foreignKey: "schoolId" });
 db.studentAttendance.belongsTo(db.school, { foreignKey: "schoolId" });
 db.dispatches.belongsTo(db.school, { foreignKey: "schoolId" });
 db.parents.belongsTo(db.school, { foreignKey: "schoolId" });
 db.timetable.belongsTo(db.school, { foreignKey: "schoolId" });
 db.expenses.belongsTo(db.school, { foreignKey: "schoolId" });
 
+db.assesments.belongsTo(db.school, { foreignKey: "schoolId" });
+db.assesments.belongsTo(db.classes, { foreignKey: "classId" });
+db.assesments.belongsTo(db.sections, { foreignKey: "sectionId" });
+db.assesments.belongsTo(db.subjects, { foreignKey: "subjectId" });
+db.assesments.belongsTo(db.semister, { foreignKey: "semisterId" });
+
+db.assessmentMarks.belongsTo(db.students, { foreignKey: "studentId" });
+db.assessmentMarks.belongsTo(db.assesments, { foreignKey: "assessmentId" });
 // db.school.belongsTo(db.roles, { foreignKey: "roleId" });
+
+// db.markSheet.belongsTo(db.students, { foreignKey: "studentId" });
+
+// const obtainedMarks = await Marks.sum("score", {
+//   where: { studentId },
+// });
+// // Update or create a GradeReport entry for the student
+// await TotalMarksheet.upsert({
+//   studentId,
+//   obtainedMarks,
+//   assessmentId,
+//   schoolId,
+// });
+// db.markSheet.belongsTo(db.school, { foreignKey: "schoolId" });
+
+db.subjectScore.belongsTo(db.students, { foreignKey: "studentId" });
+db.subjectScore.belongsTo(db.school, { foreignKey: "schoolId" });
+db.subjectScore.belongsTo(db.subjects, { foreignKey: "subjectId" });
+db.subjectScore.belongsTo(db.semister, { foreignKey: "semisterId" });
+// db.totalMarks.belongsTo(db.subjects, { foreignKey: "subjectId" });
 
 module.exports = db;

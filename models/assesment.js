@@ -1,24 +1,35 @@
 "use strict";
 module.exports = (sequelize, DataTypes) => {
   const Assesment = sequelize.define(
-    "assesments",
+    "Assessment",
     {
       id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
       },
-      name: {
+      title: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
+      },
+      type: {
+        type: DataTypes.STRING, // Example: Exam, Quiz, Assignment
+        allowNull: false,
+      },
+      date: {
+        type: DataTypes.DATE,
+        allowNull: false,
       },
       maxMarks: {
-        type: DataTypes.STRING,
+        type: DataTypes.FLOAT,
         allowNull: false,
       },
     },
-    { timestamps: false }
+    {
+      timestamps: true, // Enable timestamps
+      createdAt: "createdAt", // Custom field name for createdAt
+      updatedAt: "updatedAt", // Custom field name for updatedAt
+    }
   );
 
   return Assesment;

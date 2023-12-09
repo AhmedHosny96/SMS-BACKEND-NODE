@@ -6,8 +6,8 @@ router.get("/", studentController.getStudents);
 router.get("/:schoolId", studentController.getStudentBySchool);
 router.get("/id/:id", studentController.getStudentById);
 router.get(
-  "/section/:sectionId/:schoolId",
-  studentController.getStudentBySection
+  "/:schoolId/class/:classId/section/:sectionId",
+  studentController.getStudentByClassAndSection
 );
 router.get(
   "/destination/:destinationId",

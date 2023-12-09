@@ -1,7 +1,8 @@
 const model = require("../models/modelConfig");
 
-const Term = model.terms;
+const Term = model.semister;
 const AcademicYear = model.academicYear;
+const School = model.school;
 
 const createTerm = async (req, res) => {
   const { name, academicYearId, startDate, endDate, schoolId, ethiopianDate } =
@@ -9,11 +10,16 @@ const createTerm = async (req, res) => {
 
   let subject = await Term.findOne({
     where: {
-      name: name,
+      name,
+      schoolId,
+      academicYearId,
     },
   });
 
-  if (subject) return res.status(400).send("term with the same name exists");
+  if (subject)
+    return res
+      .status(400)
+      .send({ status: 400, message: "term with the same name exists" });
 
   let payload = {
     name,
@@ -28,9 +34,31 @@ const createTerm = async (req, res) => {
 };
 
 const getTerms = async (req, res) => {
-  const academicYear = await Term.findAll({ include: AcademicYear, raw: true });
+  const academicYear = await Term.findAll({
+    include: [AcademicYear, School],
+    raw: true,
+  });
 
   res.json(academicYear);
+};
+
+// get term by school
+
+const getTermsBySchool = async (req, res) => {
+  let schoolId = req.params;
+
+  const semister = await Term.findAll({
+    where: schoolId,
+    include: [AcademicYear, School],
+    raw: true,
+  });
+
+  if (semister.length == [])
+    return res
+      .status(404)
+      .send({ status: 404, message: `no semisters not found` });
+
+  res.json(semister);
 };
 
 const getTermById = async (req, res) => {
@@ -78,4 +106,5 @@ module.exports = {
   getTermById,
   updateTerm,
   deleteTerm,
+  getTermsBySchool,
 };
