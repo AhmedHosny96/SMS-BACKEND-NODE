@@ -7,6 +7,7 @@ const Subject = model.subjects;
 const Student = model.students;
 const Class = model.classes;
 const Semister = model.semister;
+const AcademicYear = model.academicYear;
 
 // const createDepartment = async (req, res) => {
 //   const { name, description, schoolId } = req.body;
@@ -42,22 +43,36 @@ const getGradeReportOfStudent = async (req, res) => {
 
     const subjectScores = await SubjectScore.findAll({
       where: { schoolId, semisterId, studentId },
-      include: [Subject, Student, School, Semister],
-      // attributes: ["subjectId", "obtainedMarks"],
+      include: [
+        { model: Subject },
+        { model: Student },
+        { model: School },
+        { model: Semister, include: [{ model: AcademicYear }] }, // Include AcademicYear here
+      ], // attributes: ["subjectId", "obtainedMarks"],
       raw: true,
       // nest: true,
     });
+
+    console.log(subjectScores);
 
     const groupedData = subjectScores.map(
       ({
         subjectId,
         obtainedMarks,
         "subject.name": subjectName,
-        totalMarks: totalMarks,
+        totalMarks,
         "student.admissionNumber": studentAdmission,
-        "student.firstName": fullName,
-        // "student"
+        "student.firstName": firstName,
+        "student.middleName": middleName,
+        "student.lastName": lastName,
+        "semister.name": semister,
+        "semister.academicYear.name": academicYear,
       }) => {
+        // Concatenate first name, middle name, and last name into fullName
+        const fullName = `${firstName} ${
+          middleName ? middleName + " " : ""
+        }${lastName}`;
+
         return {
           subjectId,
           subjectName,
@@ -65,6 +80,8 @@ const getGradeReportOfStudent = async (req, res) => {
           totalMarks,
           studentAdmission,
           fullName,
+          semister,
+          academicYear,
         };
       }
     );

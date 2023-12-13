@@ -174,7 +174,6 @@ const updateAssessment = async (req, res) => {
   try {
     // Find the assessment record by schoolId and id
     let assessment = await Assessment.findOne({ where: { schoolId, id } });
-
     // If assessment doesn't exist, return a 404 error
     if (!assessment) {
       return res
@@ -184,7 +183,6 @@ const updateAssessment = async (req, res) => {
 
     // Update the assessment with the data from req.body
     await assessment.update(req.body);
-
     // Fetch the updated assessment (optional)
     assessment = await Assessment.findOne({ where: { schoolId, id } });
 
