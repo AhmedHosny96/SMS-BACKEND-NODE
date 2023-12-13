@@ -3,7 +3,7 @@ const path = require("path");
 
 // Set the storage engine for multer
 const storage = multer.diskStorage({
-  destination: "C:/Users/Hp/Desktop/data/Builds/real/SMS-BACKEND-NODE/uploads/", // Destination folder to save the uploaded files
+  destination: "/tmp/uploads/", // Destination folder to save the uploaded files
   filename: (req, file, cb) => {
     cb(
       null,
