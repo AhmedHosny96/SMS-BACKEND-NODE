@@ -7,7 +7,6 @@ module.exports = {
   DB: process.env.DB_NAME,
   dialect: "mysql",
   dialectModule: mysql2,
-
   pool: {
     max: 5,
     min: 0,
