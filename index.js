@@ -17,7 +17,7 @@ const socketIO = require("socket.io");
 app.use(cors());
 
 require("dotenv").config();
-require("./config/db");
+require("./config/config");
 // require("./routes/subjects.route")(app);
 require("./startup/routes")(app);
 require("./startup/logging")();
@@ -30,6 +30,7 @@ app.listen(port, () => {
   winston.info(`listening on port ${port}`);
 });
 
+winston.info(process.env.NODE_ENV);
 const server = http.createServer(app);
 
 const io = socketIO(server);

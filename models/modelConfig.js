@@ -1,12 +1,14 @@
 "use strict";
 
-const config = require("../config/db");
+const config = require("../config/config");
 const fs = require("fs");
 const path = require("path");
 const basename = path.basename(__filename);
 const { Sequelize, DataTypes } = require("sequelize");
 
 const db = {};
+require("dotenv").config();
+process.env.NODE_ENV = "production";
 
 const sequelize = new Sequelize(config.DB, config.USER, config.PASSWORD, {
   host: config.HOST,

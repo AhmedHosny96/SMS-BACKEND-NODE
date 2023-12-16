@@ -8,7 +8,6 @@ const RolePermission = model.rolepermissions;
 const School = model.school;
 
 const createRole = async (req, res) => {
-  
   const { role, description, schoolId, permissionIds } = req.body;
 
   const roles = await Role.findOne({

@@ -1,4 +1,4 @@
-const mysql = require("../config/db");
+const mysql = require("../config/config");
 
 // const User = function (user) {
 //   this.username = user.username;
